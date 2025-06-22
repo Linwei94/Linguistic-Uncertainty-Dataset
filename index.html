@@ -1,1 +1,179 @@
-hello world
+<!-- hedging_confidence_annotation_mobile.html (v11.3)
+Fix: Google Sheet submission now uses CORS‑safe `mode:"no-cors"`, so the browser won’t block the POST even if Apps Script lacks CORS headers. A success message is shown without trying to read the opaque response.
+
+Also added an in‑file comment with **step‑by‑step Apps Script instructions** and a sample `doPost()` that appends rows.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confidence Annotation Task</title>
+
+    <!-- ========= STYLES ========= -->
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        --primary: #4caf50;
+      }
+      body {
+        margin: 0;
+        padding: 1rem;
+        background: #fafafa;
+        color: #222;
+        padding-bottom: 160px; /* prevent footer overlap */
+      }
+      h2, h3 { margin-top: 0; }
+      /* Buttons */
+      button {
+        width: 48%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: var(--primary);
+        color: #fff;
+      }
+      button:disabled { opacity: .5; }
+      .btn-row { display:flex;justify-content:space-between;gap:4%;margin-top:0.75rem; }
+      /* Fixed footer */
+      .bottom-fixed { position:fixed;left:0;right:0;bottom:0;padding:1rem;background:#fafafa;box-shadow:0 -2px 6px rgba(0,0,0,.1); }
+      /* Slider */
+      label.slider-label{display:block;font-weight:500;}
+      input[type=range]{width:100%;margin-top:.25rem;}
+      /* Progress */
+      .progress-wrapper{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin-top:.6rem;}
+      .progress-bar{height:100%;background:var(--primary);width:0%;}
+      .sentence-box{font-size:1.3rem;line-height:1.5;margin-bottom:1rem;}
+      ul{padding-left:1.2rem;} li{margin-bottom:.5rem;}
+      .error{color:#d32f2f;margin-top:1rem;} .small{font-size:.85rem;color:#555;}
+    </style>
+  </head>
+
+  <body>
+    <div id="app">Loading…</div>
+
+    <!-- Papa Parse – CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <!--
+      ===== GOOGLE SHEETS BACKEND =====
+      1. Create a Google Sheet → Extensions → Apps Script.
+      2. Replace code with:
+         function doPost(e){
+           const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+           const rows = JSON.parse(e.postData.contents);
+           rows.forEach(r=>sheet.appendRow([r.annotatorId,r.csvIndex,r.order,r.sentence,r.score,r.isControl,r.gold,new Date()]));
+           return ContentService.createTextOutput('OK').setMimeType(ContentService.MimeType.TEXT);
+         }
+      3. Deploy → *New deployment* → *Web app*.
+         - Execute as: Me
+         - Who has access: Anyone
+      4. Copy the Web app URL and paste into SHEET_WEBAPP_URL below.
+    -->
+
+    <script>
+    (()=>{
+      /* ========= CONFIG ========= */
+      const TOTAL_ITEMS_TARGET = 105;
+      const CONTROL_ITEMS_NEEDED = 5;
+      const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxttuiEEZaIT9N8B_xNrwW8d3LC_BzN8ax9xAv78Kr0n3Cbd6RPFXS2uvfFKwT5t5dX_Q/exec"; // ← update
+      const EXAMPLES = [
+        {sentence:"It might rain later this evening.",gold:40},
+        {sentence:"I am almost certain the meeting starts at 10 am.",gold:90},
+        {sentence:"Evidence for chaos is hardly conclusive at this Reynolds number.",gold:25},
+      ];
+
+      /* ========= STATE ========= */
+      const annotatorId = crypto.randomUUID?.() || `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      let dataset=[],taskItems=[],answers=[]; let currentIndex=-1,startTimestamp=null,timerHandle=null;
+
+      /* ========= HELPERS ========= */
+      const $=sel=>document.querySelector(sel);
+      const shuffle=arr=>arr.sort(()=>Math.random()-.5);
+      const fmt=t=>String(t).padStart(2,"0");
+      const fmtTime=sec=>`${fmt(Math.floor(sec/3600))}:${fmt(Math.floor(sec%3600/60))}:${fmt(sec%60)}`;
+
+      /* ========= TIMER ========= */
+      function tick(){const el=$("#timer"); if(el)el.textContent=`⏱ ${fmtTime(Math.floor((Date.now()-startTimestamp)/1000))}`;}
+      const startTimer=()=>{startTimestamp=Date.now();stopTimer();timerHandle=setInterval(tick,1000);};
+      const stopTimer=()=>{if(timerHandle)clearInterval(timerHandle);timerHandle=null;};
+
+      /* ========= INTRO ========= */
+      function intro(){
+        $("#app").innerHTML=`
+          <h2>Confidence Annotation Task</h2>
+          <p>Your annotator ID: <strong>${annotatorId}</strong></p>
+          <div id="timer" class="small"></div>
+          <p>Select a <code>.csv</code> file containing sentences to label.</p>
+          <input type="file" id="csvFile" accept=".csv" />
+          <br><br>
+          <button id="loadBtn" disabled style="width:100%">Load & Start</button>
+          <div id="status" class="small"></div>
+          <hr>
+          <h3>Examples</h3>
+          <ul>${EXAMPLES.map(e=>`<li>“${e.sentence}” → <em>${e.gold}</em></li>`).join("")}</ul>`;
+
+        $("#csvFile").addEventListener("change",ev=>{
+          const file=ev.target.files[0]; $("#loadBtn").disabled=!file;
+          $("#loadBtn").onclick=()=>{$("#status").textContent="Parsing…"; parseCSV(file);} });
+      }
+
+      function error(msg){$("#status").innerHTML=`<span class="error">${msg}</span>`;}
+      function parseCSV(file){
+        Papa.parse(file,{header:true,skipEmptyLines:true,complete:res=>{
+          if(res.errors.length)return error(res.errors[0].message);
+          const fields=res.meta.fields; const key=fields.find(h=>/sentence|text|句子/i.test(h))||fields[0];
+          dataset=res.data.map((row,i)=>({csvIndex:i+1,sentence:row[key],gold_confidence:row.gold_confidence||row.Gold||""})).filter(r=>r.sentence&&r.sentence.trim());
+          if(!dataset.length)return error("No valid sentences.");
+          $("#status").textContent=`Loaded ${dataset.length} sentences.`; buildTask();
+        },error:err=>error(err.message)});
+      }
+
+      function buildTask(){
+        const controls=shuffle(dataset.filter(r=>r.gold_confidence)).slice(0,CONTROL_ITEMS_NEEDED);
+        const rest=shuffle(dataset.filter(r=>!r.gold_confidence)).slice(0,TOTAL_ITEMS_TARGET-controls.length);
+        taskItems=shuffle([...controls,...rest]); startTimer(); next();
+      }
+
+      function render(item){
+        const percent=(currentIndex/taskItems.length)*100; const stored=answers[currentIndex]; const val=stored?stored.score:50;
+        $("#app").innerHTML=`
+          <div id="timer" class="small"></div>
+          <div class="sentence-box">${item.sentence}</div>
+          <div class="bottom-fixed">
+            <label class="slider-label">Your score: <span id="val">${val}</span></label>
+            <input type="range" id="slider" min="0" max="100" value="${val}">
+            <div class="progress-wrapper"><div class="progress-bar" style="width:${percent}%"></div></div>
+            <div class="btn-row">
+              <button id="prevBtn" ${currentIndex===0?"disabled":""}>◀ Prev</button>
+              <button id="nextBtn" ${stored?"":"disabled"}>Next ▶ (${currentIndex+1}/${taskItems.length})</button>
+            </div>
+          </div>`;
+        tick();
+        $("#slider").oninput=()=>{$("#val").textContent=$("#slider").value; $("#nextBtn").disabled=false;};
+        $("#nextBtn").onclick=()=>{store(Number($("#slider").value)); next();};
+        $("#prevBtn").onclick=()=>{if(currentIndex>0){currentIndex--; render(taskItems[currentIndex]);}};
+      }
+
+      function store(score){
+        const it=taskItems[currentIndex]; answers[currentIndex]={annotatorId,csvIndex:it.csvIndex,order:currentIndex,sentence:it.sentence,score,isControl:!!it.gold_confidence,gold:it.gold_confidence?Number(it.gold_confidence):null};
+      }
+      const next=()=>{currentIndex++; currentIndex>=taskItems.length?finish():render(taskItems[currentIndex]);};
+
+      function finish(){
+        stopTimer(); const data=answers.filter(Boolean);
+        $("#app").innerHTML=`<h2>Submitting…</h2><p>Posting to Google Sheet. Please wait.</p><div id="sheetStatus" class="small"></div>`;
+        fetch(SHEET_WEBAPP_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(data)})
+          .then(()=>{$("#sheetStatus").innerHTML='<span style="color:#4caf50">✅ Data sent! If you don’t see it in the Sheet, check that your Apps Script is deployed & “Anyone” access.</span>';})
+          .catch(err=>{console.error(err); fallback(data,err);});
+      }
+      function fallback(data,err){const csv=Papa.unparse(data); $("#sheetStatus").innerHTML=`<span class="error">❌ Post failed (${err.message}). Copy CSV below:</span><textarea style="width:100%;height:120px;margin-top:8px">${csv}</textarea>`;}
+
+      /* ========= INIT ========= */
+      intro();
+    })();
+    </script>
+  </body>
+</html>
