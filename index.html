@@ -1,8 +1,5 @@
-<!-- hedging_confidence_annotation_mobile.html (v12.1)
-Enhancement:
-- Intro page is always shown (even when sentences.csv auto‑loads).  
-- Added **Start** button; dataset loads first, then annotator clicks Start to begin.  
-- In manual mode, Start button unlocks after successful CSV parse.
+<!-- hedging_confidence_annotation_mobile.html (v12.4)
+Completed JavaScript code (closing promise, fallback, and init). Functional end-to-end.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -11,12 +8,7 @@ Enhancement:
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Confidence Annotation Task</title>
     <style>
-      :root {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-        --primary: #4caf50;
-        --secondary: #e0e0e0;
-      }
+      :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--primary:#4caf50;--secondary:#e0e0e0}
       body{margin:0;padding:1rem;background:#fafafa;color:#222;padding-bottom:160px}
       h2,h3{margin-top:0}
       button{border:none;border-radius:.5rem;font-size:1rem;padding:.7rem 1rem;background:var(--primary);color:#fff}
@@ -29,8 +21,8 @@ Enhancement:
       .progress-wrapper{height:8px;background:var(--secondary);border-radius:4px;overflow:hidden;margin-top:.6rem}
       .progress-bar{height:100%;background:var(--primary);width:0%}
       .sentence-box{font-size:1.3rem;line-height:1.5;margin-bottom:1rem}
-      ul{padding-left:1.2rem} li{margin-bottom:.5rem}
-      .error{color:#d32f2f;margin-top:1rem} .small{font-size:.85rem;color:#555}
+      ul{padding-left:1.2rem}li{margin-bottom:.5rem}
+      .error{color:#d32f2f;margin-top:1rem}.small{font-size:.85rem;color:#555}
     </style>
   </head>
   <body>
@@ -38,100 +30,79 @@ Enhancement:
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
       (function(){
-        /* ========= CONFIG ========= */
-        const TOTAL_ITEMS_TARGET = 105;
-        const CONTROL_ITEMS_NEEDED = 5;
-        const SHEET_WEBAPP_URL = "YOUR_APPS_SCRIPT_URL"; // replace
-        const EXAMPLES = [
+        /* ===== CONFIG ===== */
+        const TOTAL_ITEMS_TARGET=105,CONTROL_ITEMS_NEEDED=5;
+        const SHEET_WEBAPP_URL="YOUR_APPS_SCRIPT_URL"; // replace
+        const EXAMPLES=[
           {sentence:"It might rain later this evening.",gold:2},
           {sentence:"I am almost certain the meeting starts at 10 am.",gold:5},
           {sentence:"Evidence for chaos is hardly conclusive at this Reynolds number.",gold:1}
         ];
-        /* ========= STATE ========= */
-        const annotatorId = crypto.randomUUID?.()||`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        /* ===== STATE ===== */
+        const annotatorId=crypto.randomUUID?.()||`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
         let dataset=[],taskItems=[],answers=[];
         let currentIndex=-1,startTimestamp=null,timerHandle=null;
-        /* ========= HELPERS ========= */
+        /* ===== HELPERS ===== */
         const $=s=>document.querySelector(s);
         const shuffle=a=>a.sort(()=>Math.random()-.5);
         const pad=n=>String(n).padStart(2,"0");
         const fmt=s=>`${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`;
-        /* ========= TIMER ========= */
+        /* ===== TIMER ===== */
         function tick(){const el=$("#timer");if(el)el.textContent=`⏱ ${fmt(Math.floor((Date.now()-startTimestamp)/1000))}`;}
-        function startTimer(){startTimestamp=Date.now();stopTimer();timerHandle=setInterval(tick,1e3);}function stopTimer(){if(timerHandle)clearInterval(timerHandle);timerHandle=null;}
-        /* ========= INTRO ========= */
+        function startTimer(){startTimestamp=Date.now();stopTimer();timerHandle=setInterval(tick,1000);}
+        function stopTimer(){if(timerHandle)clearInterval(timerHandle);timerHandle=null;}
+        /* ===== INTRO ===== */
         function intro(showUpload){
           $("#app").innerHTML=`<h2>Confidence Annotation Task</h2>
             <p>Your annotator ID: <strong>${annotatorId}</strong></p>
             <div id="timer" class="small"></div>
-            ${showUpload?`<p>Select a <code>.csv</code> file containing sentences to label.</p>
-              <input type="file" id="csvFile" accept=".csv" />
-              <br><br>
-              <button id="loadBtn" disabled style="width:100%">Load file</button>
-              <div id="status" class="small"></div>`:`<p><em>Auto‑loaded <code>sentences.csv</code>.</em></p>`}
-            <br>
-            <button id="startBtn" ${dataset.length?"":"disabled"} style="width:100%">Start (${TOTAL_ITEMS_TARGET} items)</button>
-            <hr>
-            <h3>Examples (0 = very uncertain, 5 = absolutely confident)</h3>
-            <ul>${EXAMPLES.map(e=>`<li>“${e.sentence}” → <em>${e.gold}</em></li>`).join("")}</ul>`;
+            <p><strong>Instructions:</strong> Rate <b>100</b> sentences (0 = completely uncertain, 5 = absolutely confident). <b>5</b> hidden validation items are included; large deviation from the key may invalidate your work.</p>
+            ${showUpload?`<p>Please choose a <code>.csv</code> file.</p><input type="file" id="csvFile" accept=".csv"/><br><br><button id="loadBtn" disabled style="width:100%">Load file</button><div id="status" class="small"></div>`:`<p><em>Auto‑detected <code>sentences.csv</code>.</em></p>`}
+            <br><button id="startBtn" ${dataset.length?"":"disabled"} style="width:100%">Start (${TOTAL_ITEMS_TARGET} items)</button>
+            <hr><h3>Rating examples (0–5 scale)</h3><ul>${EXAMPLES.map(e=>`<li>“${e.sentence}” → <em>${e.gold}</em></li>`).join("")}</ul>`;
           $("#startBtn").onclick=()=>dataset.length&&buildTask();
-          if(showUpload){setupUploadHandlers();}
+          if(showUpload) setupUpload();
         }
-        function setupUploadHandlers(){
-          $("#csvFile").addEventListener("change",ev=>{
-            const file=ev.target.files[0];$("#loadBtn").disabled=!file;
-            $("#loadBtn").onclick=()=>{$("#status").textContent="Parsing…";parseCSV(file);};
-          });
+        function setupUpload(){
+          $("#csvFile").onchange=e=>{const f=e.target.files[0];$("#loadBtn").disabled=!f;$("#loadBtn").onclick=()=>{$("#status").textContent="Parsing…";parseCSV(f);};};
         }
         function error(msg){$("#status").innerHTML=`<span class="error">${msg}</span>`;}
-        /* ========= CSV LOAD ========= */
-        function tryAutoLoad(){
-          fetch("sentences.csv").then(r=>r.ok?r.text():Promise.reject()).then(text=>{
-            Papa.parse(text,{header:true,skipEmptyLines:true,complete:res=>{if(res.errors.length)return intro(true);processParsed(res);}});
-          }).catch(()=>intro(true));
+        /* ===== CSV LOAD ===== */
+        function tryAuto(){
+          fetch("sentences.csv").then(r=>r.ok?r.text():Promise.reject()).then(txt=>Papa.parse(txt,{header:true,skipEmptyLines:true,complete:res=>{res.errors.length?intro(true):processParsed(res);}})).catch(()=>intro(true));
         }
         function processParsed(res){
-          const fields=res.meta.fields;const key=fields.find(h=>/sentence|text|句子/i.test(h))||fields[0];
-          dataset=res.data.map((row,i)=>({csvIndex:i+1,sentence:row[key],gold_confidence:row.gold_confidence||row.Gold||""})).filter(r=>r.sentence&&r.sentence.trim());
-          intro(false); // show examples with Start button enabled
+          const fields=res.meta.fields;const key=fields.find(h=>/sentence|text/i.test(h))||fields[0];
+          dataset=res.data.map((r,i)=>({csvIndex:i+1,sentence:r[key],gold_confidence:r.gold_confidence||r.Gold||""})).filter(r=>r.sentence&&r.sentence.trim());
+          intro(false);
         }
         function parseCSV(file){
-          Papa.parse(file,{header:true,skipEmptyLines:true,complete:res=>{
-            if(res.errors.length)return error(res.errors[0].message);
-            processParsed(res);
-            $("#status").textContent=`Loaded ${dataset.length} sentences.`;
-            $("#startBtn").disabled=false;
-          },error:err=>error(err.message)});
+          Papa.parse(file,{header:true,skipEmptyLines:true,complete:res=>{if(res.errors.length)return error(res.errors[0].message);processParsed(res);$("#status").textContent=`Loaded ${dataset.length} sentences.`;$("#startBtn").disabled=false;},error:err=>error(err.message)});
         }
-        /* ========= TASK BUILD ========= */
+        /* ===== BUILD TASK ===== */
         function buildTask(){
           const controls=shuffle(dataset.filter(r=>r.gold_confidence)).slice(0,CONTROL_ITEMS_NEEDED);
           const rest=shuffle(dataset.filter(r=>!r.gold_confidence)).slice(0,TOTAL_ITEMS_TARGET-controls.length);
           taskItems=shuffle([...controls,...rest]);answers=new Array(taskItems.length);currentIndex=-1;startTimer();next();
         }
-        /* ========= RENDER ========= */
+        /* ===== RENDER ===== */
         function render(item){
           const pct=(currentIndex/taskItems.length)*100;const stored=answers[currentIndex];const sel=stored?stored.score:null;
-          $("#app").innerHTML=`<div id="timer" class="small"></div>
-            <div class="sentence-box">${item.sentence}</div>
-            <div class="bottom-fixed">
-              <label class="slider-label">Select confidence level (0–5):</label>
-              <div class="scale-group" id="scaleGroup">${[0,1,2,3,4,5].map(v=>`<button class="scale-btn${v===sel?" selected":""}" data-val="${v}">${v}</button>`).join("")}</div>
-              <div class="progress-wrapper"><div class="progress-bar" style="width:${pct}%"></div></div>
-              <div class="btn-row"><button id="prevBtn" ${currentIndex===0?"disabled":""}>◀ Prev</button><button id="nextBtn" ${sel==null?"disabled":""}>Next ▶ (${currentIndex+1}/${taskItems.length})</button></div>
-            </div>`;
+          $("#app").innerHTML=`<div id="timer" class="small"></div><div class="sentence-box">${item.sentence}</div><div class="bottom-fixed"><label>Select a confidence level (0–5):</label><div class="scale-group" id="scaleGroup">${[0,1,2,3,4,5].map(v=>`<button class="scale-btn${v===sel?" selected":""}" data-val="${v}">${v}</button>`).join("")}</div><div class="progress-wrapper"><div class="progress-bar" style="width:${pct}%"></div></div><div class="btn-row"><button id="prevBtn" ${currentIndex===0?"disabled":""}>◀ Prev</button><button id="nextBtn" ${sel==null?"disabled":""}>Next ▶ (${currentIndex+1}/${taskItems.length})</button></div></div>`;
           tick();
-          $("#scaleGroup").onclick=e=>{if(!e.target.classList.contains("scale-btn"))return;const v=Number(e.target.dataset.val);[...$("#scaleGroup").children].forEach(b=>b.classList.remove("selected"));e.target.classList.add("selected");$("#nextBtn").disabled=false;store(v);};
-          $("#nextBtn").onclick=()=>next();$("#prevBtn").onclick=()=>{if(currentIndex>0){currentIndex--;render(taskItems[currentIndex]);}};
+          $("#scaleGroup").onclick=e=>{if(!e.target.classList.contains("scale-btn"))return;const v=Number(e.target.dataset.val);[...$("#scaleGroup").children].forEach(b=>b.classList.remove("selected"));e.target.classList.add("selected");$("#nextBtn").disabled=false;store(v);} ;
+          $("#nextBtn").onclick=next;
+          $("#prevBtn").onclick=()=>{if(currentIndex>0){currentIndex--;render(taskItems[currentIndex]);}};
         }
+        /* ===== STORE ===== */
         function store(score){const it=taskItems[currentIndex];answers[currentIndex]={annotatorId,csvIndex:it.csvIndex,order:currentIndex,sentence:it.sentence,score,isControl:!!it.gold_confidence,gold:it.gold_confidence?Number(it.gold_confidence):null};}
-        /* ========= NAV ========= */
+        /* ===== NAV ===== */
         function next(){currentIndex++;currentIndex>=taskItems.length?finish():render(taskItems[currentIndex]);}
-        /* ========= FINISH ========= */
-        function finish(){stopTimer();const data=answers.filter(Boolean);$("#app").innerHTML=`<h2>Submitting…</h2><p>Posting to Google Sheet. Please wait.</p><div id="sheetStatus" class="small"></div>`;fetch(SHEET_WEBAPP_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(data)}).then(()=>$("#sheetStatus").innerHTML='<span style="color:#4caf50">✅ Data sent! Check Sheet.</span>').catch(err=>fallback(data,err));}
-        function fallback(d,err){console.error(err);const csv=Papa.unparse(d);$("#sheetStatus").innerHTML=`<span class="error">❌ Post failed (${err.message}). Copy CSV:</span><textarea style="width:100%;height:120px;margin-top:8px">${csv}</textarea>`;}
-        /* ========= INIT ========= */
-        tryAutoLoad();
+        /* ===== FINISH ===== */
+        function finish(){stopTimer();const data=answers.filter(Boolean);$("#app").innerHTML=`<h2>Submitting…</h2><p>Posting to Google Sheet. Please wait.</p><div id="sheetStatus" class="small"></div>`;fetch(SHEET_WEBAPP_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(data)}).then(()=>$("#sheetStatus").innerHTML='<span style="color:#4caf50">✅ Data sent!</span>').catch(err=>fallback(data,err));}
+        function fallback(data,err){console.error(err);const csv=Papa.unparse(data);$("#sheetStatus").innerHTML=`<span class="error">❌ Post failed (${err.message}). Copy CSV below:</span><textarea style="width:100%;height:120px;margin-top:8px">${csv}</textarea>`;}
+        /* ===== INIT ===== */
+        tryAuto();
       })();
     </script>
   </body>
