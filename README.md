@@ -36,3 +36,6 @@ This file is used to generate the HTML file (`example.html`) for the mturk annot
 
 ### `simple_qa_test_set.csv`
 Original test set of SimpleQA.
+
+### `raw_response` folder
+This folder contains the raw responses from the LLMs. Each file corresponds to a different LLM and contains the generated uncertain expressions.
