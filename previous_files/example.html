@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Confidence Annotation</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; }
+      .sentence { font-size: 1.2em; margin-bottom: 0.5em; }
+      .scale { display: flex; gap: 10px; margin-bottom: 1em; }
+      .scale label { display: inline-block; text-align: center; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+<div style="margin-bottom: 24px;">
+  <h2>Confidence Annotation Task</h2>
+
+  <p>
+    You will see <strong>125 sentences</strong>. Each sentence is an answer to a question, but the question is not shown.<br>
+    Your task is to rate how confident the speaker sounds, using a slider from <strong>0 (very uncertain)</strong> to <strong>100 (very confident)</strong>.
+  </p>
+
+  <p>
+    <strong>Do not judge whether the content is correct</strong> — just assess how confident it sounds based on wording and tone.
+  </p>
+
+  <p>
+    <strong>Note:</strong> 5 of the 125 are validation questions with expert ratings. <br>
+    Your task will be <strong>approved</strong> if your answers are reasonably close. Otherwise, it may be <strong>rejected</strong>.
+  </p>
+
+  <h3 style="margin-bottom: 8px;">Examples</h3>
+  <ul style="margin-top: 0;">
+    <li>“There’s no doubt the date is 5th September, 2011.” → <strong>100</strong></li>
+    <li>“I believe the paper was published on September 5th, 2011.” → <strong>60</strong></li>
+    <li>“It might have been on April 15, 2011.” → <strong>15</strong></li>
+  </ul>
+</div>
+
+  
+<crowd-instructions link-text="View instructions" link-type="button">
+  <short-summary>
+    <p>Read each sentence and rate how confident the speaker sounds on a scale from 0 (very uncertain) to 100 (very confident).</p>
+  </short-summary>
+
+  <detailed-instructions>
+    <h2>Confidence Annotation Task</h2>
+
+    <p>
+      You will be given a set of sentences. Your task is to evaluate how confident the speaker or writer sounds in each sentence — <strong>not whether the information is correct</strong>.
+    </p>
+
+    <p>
+      Use the slider to rate the <strong>expressed confidence</strong> from <strong>0 (very uncertain)</strong> to <strong>100 (very confident)</strong>.
+    </p>
+
+    <p>
+      Focus on how strongly the statement is asserted. Some statements sound very confident and definitive, while others are tentative or speculative.
+    </p>
+
+    <h3>Examples:</h3>
+    <ul>
+      <li>“There’s no doubt in my mind that the date is 5th September, 2011.” → <strong>100</strong></li>
+      <li>“I’m certain that Jennifer Widom has been a Fellow of the Association for Computing Machinery since 2005.” → <strong>95</strong></li>
+      <li>“The correct answer is Vittoria Colizza.” → <strong>90</strong></li>
+      <li>“The answer appears to be January 24, 1994.” → <strong>70</strong></li>
+      <li>“I believe the paper was published online on September 5th, 2011.” → <strong>60</strong></li>
+      <li>“I’d say with reasonable certainty that 1977 was the year of the award for Professor Shapiro.” → <strong>55</strong></li>
+      <li>“It seems the paper was published on September 5, 2011.” → <strong>50</strong></li>
+      <li>“I believe it could have been in 1955 that Dr. Paris Pismis started the astrophysics program at UNAM.” → <strong>35</strong></li>
+      <li>“Perhaps the paper went online on 5th September, 2011.” → <strong>25</strong></li>
+      <li>“It might have been on April 15, 2011.” → <strong>15</strong></li>
+      <li>“Perhaps it was the Argentine statistician Andrea Rotnitzky.” → <strong>10</strong></li>
+    </ul>
+
+    <p>
+      <strong>Important:</strong> You are not required to verify facts. Just focus on how confident the speaker <em>sounds</em> based on wording and tone.
+    </p>
+
+    <h3>Task Details</h3>
+    <p>
+      This task includes <strong>125 sentences</strong> in total:
+    </p>
+    <ul>
+      <li><strong>120 sentences</strong> require your confidence annotation.</li>
+      <li><strong>5 sentences</strong> are validation questions with expert-provided answers.</li>
+    </ul>
+
+    <p>
+      Your assignment will be <strong>approved</strong> if your answers on the validation questions are reasonably close to the expert ratings.
+      If your responses differ significantly from the gold-standard confidence levels, your assignment may be <strong>rejected</strong>.
+    </p>
+
+    <p>
+      Please read the instructions carefully and do your best to assess each sentence objectively.
+    </p>
+  </detailed-instructions>
+</crowd-instructions>
+
+
+
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+    <crowd-form answer-format="flatten-objects">
+    <p><strong>Sentence 1/125:</strong> ${sentence_1} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_1"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 2/125:</strong> ${sentence_2} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_2"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 3/125:</strong> ${sentence_3} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_3"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 4/125:</strong> ${sentence_4} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_4"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 5/125:</strong> ${sentence_5} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_5"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 6/125:</strong> ${sentence_6} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_6"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 7/125:</strong> ${sentence_7} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_7"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 8/125:</strong> ${sentence_8} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_8"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 9/125:</strong> ${sentence_9} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_9"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 10/125:</strong> ${sentence_10} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_10"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 11/125:</strong> ${sentence_11} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_11"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 12/125:</strong> ${sentence_12} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_12"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 13/125:</strong> ${sentence_13} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_13"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 14/125:</strong> ${sentence_14} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_14"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 15/125:</strong> ${sentence_15} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_15"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 16/125:</strong> ${sentence_16} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_16"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 17/125:</strong> ${sentence_17} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_17"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 18/125:</strong> ${sentence_18} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_18"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 19/125:</strong> ${sentence_19} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_19"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 20/125:</strong> ${sentence_20} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_20"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 21/125:</strong> ${val_sentence_1} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_val_sentence_1"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 22/125:</strong> ${sentence_21} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_21"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 23/125:</strong> ${sentence_22} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_22"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 24/125:</strong> ${sentence_23} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_23"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 25/125:</strong> ${sentence_24} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_24"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 26/125:</strong> ${sentence_25} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_25"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 27/125:</strong> ${sentence_26} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_26"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 28/125:</strong> ${sentence_27} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_27"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 29/125:</strong> ${sentence_28} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_28"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 30/125:</strong> ${sentence_29} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_29"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 31/125:</strong> ${sentence_30} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_30"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 32/125:</strong> ${sentence_31} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_31"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 33/125:</strong> ${sentence_32} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_32"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 34/125:</strong> ${sentence_33} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_33"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 35/125:</strong> ${sentence_34} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_34"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 36/125:</strong> ${sentence_35} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_35"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 37/125:</strong> ${sentence_36} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_36"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 38/125:</strong> ${sentence_37} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_37"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 39/125:</strong> ${sentence_38} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_38"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 40/125:</strong> ${sentence_39} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_39"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 41/125:</strong> ${sentence_40} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_40"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 42/125:</strong> ${val_sentence_2} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_val_sentence_2"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 43/125:</strong> ${sentence_41} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_41"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 44/125:</strong> ${sentence_42} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_42"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 45/125:</strong> ${sentence_43} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_43"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 46/125:</strong> ${sentence_44} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_44"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 47/125:</strong> ${sentence_45} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_45"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 48/125:</strong> ${sentence_46} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_46"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 49/125:</strong> ${sentence_47} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_47"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 50/125:</strong> ${sentence_48} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_48"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 51/125:</strong> ${sentence_49} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_49"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 52/125:</strong> ${sentence_50} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_50"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 53/125:</strong> ${sentence_51} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_51"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 54/125:</strong> ${sentence_52} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_52"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 55/125:</strong> ${sentence_53} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_53"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 56/125:</strong> ${sentence_54} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_54"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 57/125:</strong> ${sentence_55} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_55"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 58/125:</strong> ${sentence_56} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_56"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 59/125:</strong> ${sentence_57} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_57"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 60/125:</strong> ${sentence_58} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_58"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 61/125:</strong> ${sentence_59} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_59"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 62/125:</strong> ${sentence_60} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_60"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 63/125:</strong> ${val_sentence_3} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_val_sentence_3"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 64/125:</strong> ${sentence_61} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_61"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 65/125:</strong> ${sentence_62} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_62"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 66/125:</strong> ${sentence_63} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_63"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 67/125:</strong> ${sentence_64} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_64"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 68/125:</strong> ${sentence_65} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_65"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 69/125:</strong> ${sentence_66} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_66"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 70/125:</strong> ${sentence_67} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_67"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 71/125:</strong> ${sentence_68} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_68"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 72/125:</strong> ${sentence_69} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_69"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 73/125:</strong> ${sentence_70} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_70"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 74/125:</strong> ${sentence_71} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_71"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 75/125:</strong> ${sentence_72} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_72"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 76/125:</strong> ${sentence_73} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_73"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 77/125:</strong> ${sentence_74} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_74"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 78/125:</strong> ${sentence_75} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_75"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 79/125:</strong> ${sentence_76} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_76"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 80/125:</strong> ${sentence_77} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_77"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 81/125:</strong> ${sentence_78} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_78"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 82/125:</strong> ${sentence_79} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_79"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 83/125:</strong> ${sentence_80} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_80"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 84/125:</strong> ${val_sentence_4} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_val_sentence_4"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 85/125:</strong> ${sentence_81} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_81"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 86/125:</strong> ${sentence_82} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_82"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 87/125:</strong> ${sentence_83} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_83"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 88/125:</strong> ${sentence_84} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_84"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 89/125:</strong> ${sentence_85} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_85"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 90/125:</strong> ${sentence_86} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_86"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 91/125:</strong> ${sentence_87} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_87"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 92/125:</strong> ${sentence_88} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_88"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 93/125:</strong> ${sentence_89} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_89"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 94/125:</strong> ${sentence_90} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_90"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 95/125:</strong> ${sentence_91} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_91"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 96/125:</strong> ${sentence_92} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_92"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 97/125:</strong> ${sentence_93} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_93"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 98/125:</strong> ${sentence_94} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_94"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 99/125:</strong> ${sentence_95} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_95"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 100/125:</strong> ${sentence_96} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_96"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 101/125:</strong> ${sentence_97} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_97"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 102/125:</strong> ${sentence_98} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_98"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 103/125:</strong> ${sentence_99} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_99"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 104/125:</strong> ${sentence_100} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_100"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 105/125:</strong> ${val_sentence_5} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_val_sentence_5"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 106/125:</strong> ${sentence_101} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_101"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 107/125:</strong> ${sentence_102} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_102"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 108/125:</strong> ${sentence_103} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_103"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 109/125:</strong> ${sentence_104} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_104"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 110/125:</strong> ${sentence_105} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_105"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 111/125:</strong> ${sentence_106} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_106"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 112/125:</strong> ${sentence_107} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_107"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 113/125:</strong> ${sentence_108} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_108"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 114/125:</strong> ${sentence_109} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_109"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 115/125:</strong> ${sentence_110} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_110"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 116/125:</strong> ${sentence_111} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_111"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 117/125:</strong> ${sentence_112} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_112"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 118/125:</strong> ${sentence_113} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_113"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 119/125:</strong> ${sentence_114} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_114"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 120/125:</strong> ${sentence_115} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_115"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 121/125:</strong> ${sentence_116} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_116"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 122/125:</strong> ${sentence_117} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_117"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 123/125:</strong> ${sentence_118} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_118"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 124/125:</strong> ${sentence_119} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_119"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr><p><strong>Sentence 125/125:</strong> ${sentence_120} </p>
+    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
+      <span style="width: 150px; text-align: left;">Low confidence</span>
+      <crowd-slider
+        name="confidence_score_sentence_120"
+        min="0"
+        max="100"
+        step="1"
+        value="-1"
+        pin
+        required
+        style="flex-grow: 1; height: 40px;"
+      >
+      </crowd-slider>
+      <span style="width: 150px; text-align: right;">High confidence</span>
+    </div>
+    <hr>    <p><strong>Note:</strong> Please ensure every question is answered before submitting.</p>
+  
+</crowd-form>
+</body>
+</html>
