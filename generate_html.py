@@ -27,6 +27,7 @@ def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sent
       .scale label { display: inline-block; text-align: center; cursor: pointer; }
     </style>
   </head>
+  
   <body>
 <div style="margin-bottom: 24px;">
   <h2>Confidence Annotation Task</h2>
@@ -166,12 +167,58 @@ def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sent
 
 
     # 尾部 HTML 模板
-    html_tail = """    <p><strong>Note:</strong> Please ensure every question is answered before submitting.</p>
+    html_tail = """<p><strong>Note:</strong> Please ensure every question is answered before submitting.</p>
+
   </body>
 </html>
 """
 
-    html_suffix = "</crowd-form>\n</body>\n</html>"
+    html_suffix = """
+    </crowd-form>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("crowd-form");
+  const sliders = document.querySelectorAll("crowd-slider");
+
+  // Map to track if each slider has been answered
+  const completionStatus = new Map();
+
+  sliders.forEach((slider, index) => {
+    // Default: unanswered
+    completionStatus.set(index, false);
+
+    // Listen to changes
+    slider.addEventListener("change", () => {
+      const val = parseInt(slider.value);
+      if (!isNaN(val) && val >= 0) {
+        completionStatus.set(index, true);
+        slider.style.border = "none";
+      } else {
+        completionStatus.set(index, false);
+        slider.style.border = "2px solid red";
+      }
+    });
+  });
+
+  form.addEventListener("submit", function (event) {
+    let allCompleted = true;
+    completionStatus.forEach((answered, index) => {
+      if (!answered) {
+        allCompleted = false;
+        sliders[index].style.border = "2px solid red";
+      }
+    });
+
+    if (!allCompleted) {
+      event.preventDefault();
+      alert("⚠️ Please rate every sentence before submitting.");
+    }
+  });
+});
+</script>
+
+\n</body>\n</html>
+    """
 
     # 合并并写入文件
     with open(filename, "w", encoding="utf-8") as f:
