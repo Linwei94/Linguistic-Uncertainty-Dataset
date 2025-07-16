@@ -109,14 +109,14 @@ class autoAccept:
                     self.rejectProcessFromCSV(assignment_id, df_fin)
                 except Exception as e:
                     print(f"Error rejecting assignment {assignment_id}: {e}")
-        df_fin.to_csv(f"{resultFileName[:-4]}_Upload.csv", index=False)
+        df_fin.to_csv(f"tmp/{resultFileName[:-4]}_Upload.csv", index=False)
 
 
 def testMainProcessFromCSV():
     # 实例化
     aac = autoAccept()
 
-    filename = 'Batch_416751_batch_results.csv'
+    filename = 'tmp/Batch_416760_batch_results.csv'
 
     # 处理数据
     aac.mainprocessFromCSV(filename)
