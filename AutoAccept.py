@@ -5,6 +5,7 @@ from types import SimpleNamespace
 class autoAccept:
     def __init__(self):
         pass
+        pass
 
     def configProcess(self, row):
         self.constraints = {
@@ -29,7 +30,6 @@ class autoAccept:
             upper_col = f"Input.val_upper_bound_{num}"
 
             result_dict[key] = [row[lower_col], row[upper_col]]
-        print(result_dict)
         return SimpleNamespace(judgement=result_dict, threshold=4, )
 
     def constraint1(self, dataset, constraint1_config, constraintDesc='Over 4 valid in 5 sentences.'):
