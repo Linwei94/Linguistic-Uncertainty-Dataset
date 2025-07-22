@@ -5,6 +5,10 @@ import argparse
 
 class autoAccept:
     def __init__(self):
+        self.constrain1_boolean = []
+        self.constrain2_boolean = []
+        self.constrain3_boolean = []
+        self.constrain4_boolean = []
         pass
 
     def configProcess(self, row, pass_count):
@@ -49,14 +53,22 @@ class autoAccept:
                 (1 - fuzzyBoundary) <= ans <= high * (1 + fuzzyBoundary)
         if sum(results.values()) >= constrain1_config.threshold:
             print("constrain:" + constrainDesc + " PASS")
+            self.constrain1_boolean.append(True)
             return True
         print("constrain:" + constrainDesc + " Falied")
+        self.constrain1_boolean.append(False)
         return False
 
     def getconstrain2Config(self, ):
         return
 
-    def constrain2(self, row, allSentenceFilePath, consistencyBar, constrainDesc='Selected Consistency Rate'):
+    def constrain2(
+        self,
+        row: pd.Series,
+        allSentenceFilePath: str,
+        consistencyBar: float,
+        constrainDesc: str = 'Selected Consistency Rate'
+    ) -> bool:
         confidence_bounds = {
             'completely uncertain': (0, 30),
             'lowest': (10, 50),
@@ -73,15 +85,63 @@ class autoAccept:
                 curr_success += 1
         if curr_success / 100.0 >= consistencyBar:
             print("constrain:" + constrainDesc + " PASS")
+            self.constrain2_boolean.append(True)
             return True
         print("constrain:" + constrainDesc + " Falied")
+        self.constrain2_boolean.append(False)
         return False
 
-    def constrain3(self, constrainDesc='Total z-score'):
-        return True
+    def constrain3(
+        self,
+        row: pd.Series,
+        zscore_sum_threshold: int,
+        constrainDesc='Total z-score'
+    ) -> bool:
+        zscores = []
+        for i in range(1, 6):
+            val_idx = row[f"Input.val_index_{i}"]
+            score = row[f"Answer.confidence_score_val_sentence_{i}"]
+            stats = self.stats_map.get(val_idx)
+            if stats is None or stats['std'] == 0:
+                zscore = 0
+            else:
+                zscore = (score - stats['mean']) / stats['std']
+            zscores.append(zscore)
+        zscore_sum = sum(abs(z) for z in zscores)
+        if zscore_sum <= zscore_sum_threshold:
+            print("constrain:" + constrainDesc + " PASS")
+            self.constrain3_boolean.append(True)
+            return True
+        print("constrain:" + constrainDesc + " Falied")
+        self.constrain3_boolean.append(False)
+        return False
 
-    def constrain4(self, constrainDesc='Individual z-score'):
-        return True
+    def constrain4(
+        self,
+        row: pd.Series,
+        zscore_value_threshold: float,
+        zscore_count_threshold: int,
+        constrainDesc: str = 'Individual z-score',
+    ) -> bool:
+        zscores = []
+        for i in range(1, 6):
+            val_idx = row[f"Input.val_index_{i}"]
+            score = row[f"Answer.confidence_score_val_sentence_{i}"]
+            stats = self.stats_map.get(val_idx)
+            if stats is None or stats['std'] == 0:
+                zscore = 0
+            else:
+                zscore = (score - stats['mean']) / stats['std']
+            zscores.append(zscore)
+        high_zscore_count = sum(
+            abs(z) > zscore_value_threshold for z in zscores)
+        if high_zscore_count <= zscore_count_threshold:
+            print("constrain:" + constrainDesc + " PASS")
+            self.constrain4_boolean.append(True)
+            return True
+        print("constrain:" + constrainDesc + " Falied")
+        self.constrain4_boolean.append(False)
+        return False
 
     def runAllconstrains(self, params_dict, all_constrains_pass_rate, all_constrains_pass_boolean_list):
         results = []
@@ -121,11 +181,36 @@ class autoAccept:
                  'Reject'] = 'Your response did not meet our quality standards.'
         return data
 
+    def mean_std_for_each_val_index(
+        self,
+        filepath: str,
+    ) -> dict:
+        df = pd.read_csv(filepath)
+        index_cols = [f"Input.val_index_{i}" for i in range(1, 6)]
+        score_cols = [
+            f"Answer.confidence_score_val_sentence_{i}" for i in range(1, 6)]
+        missing = set(index_cols + score_cols) - set(df.columns)
+        if missing:
+            raise ValueError(f"Missing columns in CSV: {missing}")
+
+        val_index_df = df[index_cols].melt(value_name='val_index')
+        score_df = df[score_cols].melt(value_name='score')
+        combined = pd.concat(
+            [val_index_df['val_index'], score_df['score']], axis=1)
+        stats_map = (
+            combined
+            .groupby('val_index')['score']
+            .agg(['mean', 'std'])
+            .to_dict('index')
+        )
+        return stats_map
+
     # predict main process logic:
     # 1. load global data
     # 2. prepare data from all data
     # 3. for each row, apply every constraints
     # 4. generate upload files.
+
     def main_process_from_CSV(
         self,
         resultFileName: str,
@@ -134,6 +219,9 @@ class autoAccept:
         constrain1_pass_count: int,
         constrain2_all_sentence_filename: str,
         constrain2_consistency_bar: float,
+        constrain3_pass_count_for_sum_zscore: int,
+        constrain4_pass_count_for_single_value: float,
+        constrain4_pass_count: int,
     ) -> None:
         df = pd.read_csv(resultFileName)
         df_fin = df
@@ -142,6 +230,9 @@ class autoAccept:
             'pass_row': [],
             'fail_row': [],
         }
+        # prepare golbal data for constrain
+        self.stats_map = self.mean_std_for_each_val_index(resultFileName)
+        # start check every assignment
         for idx, row in df.iterrows():
             print()
             print(f"Dealing with {idx + 1}/{df.shape[0]} hits.")
@@ -151,13 +242,16 @@ class autoAccept:
             # constrain2 data
             # no other data required except row
             # constrain3 data
-            
-            # pass
-            # constrains configue
+            # no other data required except row which needed to prepare here.
+            # constrain4 data
+            # no other data required except row which needed to prepare here.
+            # constraints configue
             self.configProcess(row, constrain1_pass_count)
             params = {
                 'constrain1': (data, self.constrain1_config,),
-                'constrain2': (row, constrain2_all_sentence_filename, constrain2_consistency_bar, ),
+                'constrain2': (row, constrain2_all_sentence_filename, constrain2_consistency_bar,),
+                'constrain3': (row, constrain3_pass_count_for_sum_zscore,),
+                'constrain4': (row, constrain4_pass_count_for_single_value, constrain4_pass_count,),
             }
             # run constrains
             if self.runAllconstrains(params, all_constrains_pass_rate, all_constrains_pass_boolean_list):
@@ -172,7 +266,8 @@ class autoAccept:
                     self.rejectProcessFromCSV(assignment_id, df_fin)
                 except Exception as e:
                     print(f"Error rejecting assignment {assignment_id}: {e}")
-        print(f"total pass {len(resrow['pass_row'])}\n total fail {len(resrow['fail_row'])}")
+        print(
+            f"total pass {len(resrow['pass_row'])}\n total fail {len(resrow['fail_row'])}")
         df_fin.to_csv(f"{resultFileName[:-4]}_Upload.csv", index=False)
 
 
@@ -184,7 +279,15 @@ def testMainProcessFromCSV(args):
                               args.all_constrains_pass_boolean_list,
                               args.constrain1_pass_count,
                               args.constrain2_all_sentence_filename,
-                              args.constrain2_consistency_bar)
+                              args.constrain2_consistency_bar,
+                              args.constrain3_pass_count_for_sum_zscore,
+                              args.constrain4_pass_count_for_single_value,
+                              args.constrain4_pass_count,
+                              )
+    print("constrain1:", aac.constrain1_boolean)
+    print("constrain2:", aac.constrain2_boolean)
+    print("constrain3:", aac.constrain3_boolean)
+    print("constrain4:", aac.constrain4_boolean)
 
 
 if __name__ == '__main__':
@@ -216,6 +319,21 @@ if __name__ == '__main__':
                            type=float,
                            default=0.45,
                            help='Lower bound of consistency distribution obtained by human through graph')
+    # constrain 3
+    argparser.add_argument('--constrain3_pass_count_for_sum_zscore',
+                           type=int,
+                           default=8,
+                           help='hyperparameter that the total error of zscores of the five valued sentences ')
+    # constrain 4
+    argparser.add_argument('--constrain4_pass_count_for_single_value',
+                           type=float,
+                           default=0.8,
+                           help='hyperparameter that error for a valued sentence to pass')
+    # constrain 4
+    argparser.add_argument('--constrain4_pass_count',
+                           type=int,
+                           default=4,
+                           help='hyperparameter that the number of sentence to pass the constrain')
     #
     args = argparser.parse_args()
     #
