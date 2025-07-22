@@ -1,19 +1,19 @@
 import pandas as pd
 from types import SimpleNamespace
-
+import argparse
 
 class autoAccept:
     def __init__(self):
         pass
         pass
 
-    def configProcess(self, row):
+    def configProcess(self, row, pass_count):
         self.constraints = {
             'constraint1': self.constraint1,
         }
-        self.constraint1_config = self.getConstraint1Config(row)
+        self.constraint1_config = self.getConstraint1Config(row, pass_count)
 
-    def getConstraint1Config(self, row):
+    def getConstraint1Config(self, row, pass_count):
         cols = [
             'Input.val_upper_bound_1', 'Input.val_lower_bound_1',
             'Input.val_upper_bound_2', 'Input.val_lower_bound_2',
@@ -30,7 +30,7 @@ class autoAccept:
             upper_col = f"Input.val_upper_bound_{num}"
 
             result_dict[key] = [row[lower_col], row[upper_col]]
-        return SimpleNamespace(judgement=result_dict, threshold=4, )
+        return SimpleNamespace(judgement=result_dict, threshold=pass_count, )
 
     def constraint1(self, dataset, constraint1_config, constraintDesc='Over 4 valid in 5 sentences.'):
         results = {}
@@ -85,7 +85,7 @@ class autoAccept:
         data.loc[data['AssignmentId'] == assignment_id, 'Reject'] = 'Your response did not meet our quality standards.'
         return data
 
-    def mainprocessFromCSV(self, resultFileName):
+    def mainprocessFromCSV(self, resultFileName, pass_count=4):
         df = pd.read_csv(resultFileName)
         df_fin = df
         print("Successfully read result csv.")
@@ -95,7 +95,7 @@ class autoAccept:
             assignment_id = row['AssignmentId']
             data = self.resultToDataset(row)
             # 配置约束
-            self.configProcess(row)
+            self.configProcess(row, pass_count)   
             params = {
                 'constraint1': (data, self.constraint1_config,),
             }
@@ -109,18 +109,20 @@ class autoAccept:
                     self.rejectProcessFromCSV(assignment_id, df_fin)
                 except Exception as e:
                     print(f"Error rejecting assignment {assignment_id}: {e}")
-        df_fin.to_csv(f"tmp/{resultFileName[:-4]}_Upload.csv", index=False)
+        df_fin.to_csv(f"{resultFileName[:-4]}_Upload.csv", index=False)
 
 
-def testMainProcessFromCSV():
+def testMainProcessFromCSV(args):
     # 实例化
     aac = autoAccept()
 
-    filename = 'tmp/Batch_416760_batch_results.csv'
-
     # 处理数据
-    aac.mainprocessFromCSV(filename)
+    aac.mainprocessFromCSV(args.filename, args.constrain1_pass_count)
 
 
 if __name__ == '__main__':
-    testMainProcessFromCSV()
+    argparser = argparse.ArgumentParser(description='Auto Accept Script')
+    argparser.add_argument('--filename', type=str, help='Path to the CSV file containing results', default='/home/linwei/Linguistic-Uncertainty-Dataset/tmp/Batch_5332788_batch_results.csv')
+    argparser.add_argument('--constrain1_pass_count', type=int, default=4, help='Number of sentences that must pass the constraint')
+    args = argparser.parse_args()    
+    testMainProcessFromCSV(args)

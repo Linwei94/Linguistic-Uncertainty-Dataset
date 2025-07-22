@@ -14,7 +14,6 @@ Note:
     静态
 '''
 def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sentence_', label="val_sentence_"):
-    # 头部 HTML 模板
     html_head = """<!DOCTYPE html>
 <html>
   <head>
@@ -29,6 +28,11 @@ def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sent
   </head>
   
   <body>
+<h2 style="background-color: red; color: white; padding: 12px;">
+  Warning: Each worker may complete a maximum of five assignments. Submissions exceeding this limit will be rejected.
+</h2>
+
+
 <div style="margin-bottom: 24px;">
   <h2>Confidence Annotation Task</h2>
 
@@ -55,8 +59,8 @@ def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sent
   <ul style="margin-top: 0;">
     <li>&ldquo;There&rsquo;s <strong>no doubt</strong> the date is 5th September 2011.&rdquo; &rarr; <strong>100</strong></li>
     <li>&ldquo;I <strong>believe</strong> the paper was published on September 5th 2011.&rdquo; &rarr; <strong>60</strong></li>
-    <li>&ldquo;It <strong>might have</strong> been on April 15 2011.&rdquo; &rarr; <strong>15</strong></li>
-    <li>&ldquo;I&rsquo;m sorry, but I <strong>can&rsquo;t definitively</strong> answer that.&rdquo; &rarr; <strong>0</strong></li>
+    <li>&ldquo;It <strong>might have</strong> been on April 15 2011.&rdquo; &rarr; <strong>30</strong></li>
+    <li style="color: red;">&ldquo;I&rsquo;m sorry, but I <strong>can&rsquo;t definitively</strong> answer that.&rdquo; &rarr; <strong>0</strong></li>
   </ul>
 </div>
 
@@ -143,30 +147,38 @@ def generate_mturk_html(filename="questions.html", n = 100, m = 5, unlabel='sent
         else:
             question = sentence_[p]
             p += 1
-        question_blocks += f"""<p><strong>Sentence {i}/105:</strong> ${{{question}}} </p>
-    <div style="display: flex; align-items: center; width: 650px; margin-bottom: 32px;">
-      <span style="width: 150px; text-align: left;">Low confidence</span>
-      <crowd-slider
-        name="confidence_score_{question}"
-        min="0"
-        max="100"
-        step="1"
-        value="-1"
-        pin
-        required
-        style="flex-grow: 1; height: 40px;"
-      >
-      </crowd-slider>
-      <span style="width: 150px; text-align: right;">High confidence</span>
-    </div>
-    <hr>"""            
+        question_blocks += f"""<p><strong>Sentence {i}/105:</strong> ${{{question}}}</p>
+<div style="display: flex; flex-direction: column; align-items: center; width: 650px; margin-bottom: 32px; position: relative;">
+  <div style="display: flex; align-items: center; width: 100%;">
+    <span style="width: 150px; text-align: left;">Low confidence</span>
+    <crowd-slider
+      name="confidence_score_{question}"
+      min="0"
+      max="100"
+      step="1"
+      value="-1"
+      pin
+      required
+      style="flex-grow: 1; height: 40px;"
+    >
+    </crowd-slider>
+    <span style="width: 150px; text-align: right;">High confidence</span>
+  </div>
+
+  <!-- Midpoint tick and label -->
+  <div style="position: absolute; top: 22px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+    <div style="width: 1px; height: 12px; background-color: gray;"></div> <!-- tick mark -->
+    <div style="font-size: 12px; color: #333; margin-top: 2px;">50</div> <!-- label -->
+  </div>
+</div>
+<hr>
+"""            
 
 
 
 
 
 
-    # 尾部 HTML 模板
     html_tail = """<p><strong>Note:</strong> Please ensure every question is answered before submitting.</p>
 
   </body>
@@ -220,7 +232,6 @@ document.addEventListener("DOMContentLoaded", function () {
 \n</body>\n</html>
     """
 
-    # 合并并写入文件
     with open(filename, "w", encoding="utf-8") as f:
         f.write(html_head + html_prefix + question_blocks + html_tail.replace("</body>\n</html>", "") + html_suffix)
 
@@ -230,6 +241,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-# 调用生成函数
 if __name__ == "__main__":
     generate_mturk_html("example.html", 100, 5)
