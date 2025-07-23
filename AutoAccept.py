@@ -160,7 +160,7 @@ class autoAccept:
             results.append(res)
         true_count = sum(results)
         ratio = true_count / len(results) if results else 0
-        return ratio >= all_constrains_pass_rate and all(x > y for x, y in zip(results, all_constrains_pass_boolean_list))
+        return ratio >= all_constrains_pass_rate and all(x >= y for x, y in zip(results, all_constrains_pass_boolean_list))
 
     def resultToDataset(self, df):
         cols = ['Answer.confidence_score_val_sentence_1', 'Answer.confidence_score_val_sentence_2',
@@ -288,10 +288,10 @@ def testMainProcessFromCSV(args):
                               args.constrain4_pass_count_for_single_value,
                               args.constrain4_pass_count,
                               )
-    print("constrain1:", aac.constrain1_boolean)
-    print("constrain2:", aac.constrain2_boolean)
-    print("constrain3:", aac.constrain3_boolean)
-    print("constrain4:", aac.constrain4_boolean)
+    # print("constrain1:", aac.constrain1_boolean)
+    # print("constrain2:", aac.constrain2_boolean)
+    # print("constrain3:", aac.constrain3_boolean)
+    # print("constrain4:", aac.constrain4_boolean)
 
     # save results
     import pickle
