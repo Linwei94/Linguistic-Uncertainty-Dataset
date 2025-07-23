@@ -313,11 +313,11 @@ if __name__ == '__main__':
                            help='Path to the CSV file containing results')
     argparser.add_argument('--all_constrains_pass_rate',
                            type=float,
-                           default=0.5,
+                           default=0.75,
                            help='The ratio required to pass all constraints')
     argparser.add_argument('--all_constrains_pass_boolean_list',
                            type=list,
-                           default=[False, False, False, False],
+                           default=[False, True, True, True],
                            help='The boolean list required to pass all constraints')
     # constrain 1
     argparser.add_argument('--constrain1_pass_count',
