@@ -289,13 +289,23 @@ def testMainProcessFromCSV(args):
     print("constrain3:", aac.constrain3_boolean)
     print("constrain4:", aac.constrain4_boolean)
 
+    # save results
+    import pickle
+    with open('constrain1_boolean.pkl', 'wb') as f:
+        pickle.dump(aac.constrain1_boolean, f)
+    with open('constrain2_boolean.pkl', 'wb') as f:
+        pickle.dump(aac.constrain2_boolean, f)
+    with open('constrain3_boolean.pkl', 'wb') as f:
+        pickle.dump(aac.constrain3_boolean, f)
+    with open('constrain4_boolean.pkl', 'wb') as f:
+        pickle.dump(aac.constrain4_boolean, f)
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Auto Accept Script')
     # public
     argparser.add_argument('--filename',
                            type=str,
-                           default='res/Batch_5332788_batch_results.csv',
+                           default='tmp/Batch_5332788_batch_results.csv',
                            help='Path to the CSV file containing results')
     argparser.add_argument('--all_constrains_pass_rate',
                            type=float,
