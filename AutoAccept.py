@@ -40,7 +40,8 @@ class autoAccept:
             result_dict[key] = [row[lower_col], row[upper_col]]
         return SimpleNamespace(judgement=result_dict, threshold=pass_count, )
 
-    def constrain1(self, dataset, constrain1_config, fuzzyBoundary=0.00, constrainDesc='Over 4 valid in 5 sentences.'):
+    # Check the result by whether it is consistent with the valued sentence
+    def constrain1(self, dataset, constrain1_config, fuzzyBoundary=0.00, constrainDesc='valid sentence check.'):
         results = {}
         for idx in constrain1_config.judgement.keys():
             row = dataset[dataset['index'] == idx]
@@ -62,6 +63,7 @@ class autoAccept:
     def getconstrain2Config(self, ):
         return
 
+    # Check the consistency of all questions with the AI to see if they meet the conditions
     def constrain2(
         self,
         row: pd.Series,
@@ -91,6 +93,7 @@ class autoAccept:
         self.constrain2_boolean.append(False)
         return False
 
+    # Check whether the conditions are met through the total offset deviation from the center in each dimension
     def constrain3(
         self,
         row: pd.Series,
@@ -116,6 +119,7 @@ class autoAccept:
         self.constrain3_boolean.append(False)
         return False
 
+    # From the aspect of the valued sentence, check the validity by whether it deviates from the center
     def constrain4(
         self,
         row: pd.Series,
