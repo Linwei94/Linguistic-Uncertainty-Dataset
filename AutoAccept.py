@@ -1,7 +1,7 @@
 import pandas as pd
 from types import SimpleNamespace
 import argparse
-
+import os
 
 class autoAccept:
     def __init__(self):
@@ -182,7 +182,7 @@ class autoAccept:
 
     def rejectProcessFromCSV(self, assignment_id, data):
         data.loc[data['AssignmentId'] == assignment_id,
-                 'Reject'] = 'Your response did not meet our quality standards.'
+                 'Reject'] = "You didn't pass the screening criteria or results unreasonablely far away from other annotaters."
         return data
 
     def mean_std_for_each_val_index(
@@ -295,13 +295,15 @@ def testMainProcessFromCSV(args):
 
     # save results
     import pickle
-    with open('constrain1_boolean.pkl', 'wb') as f:
+    if not os.path.exists('tmp'):
+        os.makedirs('tmp')
+    with open('tmp/constrain1_boolean.pkl', 'wb') as f:
         pickle.dump(aac.constrain1_boolean, f)
-    with open('constrain2_boolean.pkl', 'wb') as f:
+    with open('tmp/constrain2_boolean.pkl', 'wb') as f:
         pickle.dump(aac.constrain2_boolean, f)
-    with open('constrain3_boolean.pkl', 'wb') as f:
+    with open('tmp/constrain3_boolean.pkl', 'wb') as f:
         pickle.dump(aac.constrain3_boolean, f)
-    with open('constrain4_boolean.pkl', 'wb') as f:
+    with open('tmp/constrain4_boolean.pkl', 'wb') as f:
         pickle.dump(aac.constrain4_boolean, f)
 
 if __name__ == '__main__':
@@ -309,7 +311,7 @@ if __name__ == '__main__':
     # public
     argparser.add_argument('--filename',
                            type=str,
-                           default='tmp/Batch_5332788_batch_results.csv',
+                           default='tmp/Batch_5332788_batch_results_8.csv',
                            help='Path to the CSV file containing results')
     argparser.add_argument('--all_constrains_pass_rate',
                            type=float,
@@ -331,7 +333,7 @@ if __name__ == '__main__':
                            help='Path to all_sentences_by_confidence.csv')
     argparser.add_argument('--constrain2_consistency_bar',
                            type=float,
-                           default=0.45,
+                           default=0.35,
                            help='Lower bound of consistency distribution obtained by human through graph')
     # constrain 3
     argparser.add_argument('--constrain3_pass_count_for_sum_zscore',

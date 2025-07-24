@@ -53,3 +53,9 @@ This file is a sample of 10,000 uncertain expressions extracted from the `all_se
 
 ### `sampled_50_df_for_validation.csv`
 This file contains 50 uncertain expressions sampled from the `sampled_10000_sentences.csv` file. It is used for validation purposes.  Each survey will sample 5 sentences from the validation set, and each sentences will be annotated by 10 experts.
+
+### `annotation.csv`
+The raw response from Amazon Mechanical Turk (MTurk) annotation platform. It contains the annotations from the worker for the uncertain expressions.
+
+### `dataset.csv`
+This file is the final dataset after the annotation process. It contains the question, ground-truth answer, uncertain expression, confidence level, and the worker's annotation for each uncertain expression.
