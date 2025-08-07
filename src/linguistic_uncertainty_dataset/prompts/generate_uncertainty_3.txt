@@ -1,0 +1,6 @@
+You are given a question and its ground-truth answer. Your task is to generate 10 answer sentences that express the same answer using different levels of confidence:
+
+10 with low confidence
+
+Question: {}
+Answer: {}

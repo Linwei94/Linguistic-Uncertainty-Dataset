@@ -1,0 +1,6 @@
+We are evaluating answers to the question \"{question}\"
+Here are two possible answers:\
+Possible Answer 1: {text1}
+Possible Answer 2: {text2}
+Does Possible Answer 1 semantically entail Possible Answer 2? Respond only with entailment, contradiction, or neutral.
+Response:
