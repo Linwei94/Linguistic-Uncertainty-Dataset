@@ -7,5 +7,3 @@ test.ipynb
 simpleqa_experiments/batch_tasks/*
 *.pth
 .conda
-new_code_framework/llm_linguistic_confidence_study/confidence_extraction_methods/models.py
-simpleqa_experiments/semantic_uncertainty

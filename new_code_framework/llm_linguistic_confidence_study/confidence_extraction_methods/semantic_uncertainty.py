@@ -2,79 +2,61 @@ import pandas as pd
 import numpy as np
 from sympy.logic.boolalg import false
 import tqdm
-from models import *
+
+SIMPLE_QA_SAMPLE_TAMPLATE = """
+Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+# You will receive a question. Please provide an answer in a single brief but complete sentence.
+
+### Question:
+{question}
+
+### Response:""".strip()
+
+SIMPLE_QA_ENATILMENY_TAMPLATE = """
+We are evaluating answers to the question {question}
+Here are two possible answers:
+Possible Answer 1: {answer1}
+Possible Answer 2: {answer2}
+Does Possible Answer 1 semantically entail Possible Answer 2? Respond only with entailment, contradiction, or neutral.
+Response:""".strip()
+
+SIMPLE_QA_MEETRIC_TAMPLATE = """
+The question is: {question}.
+The correct answer to this question is: {correct_answer}.
+The proposed answer is: {predicted_answer}
+Within the context of the question, does the proposed answer mean the same as any of the expected answers? Respond only with yes or no.
+Response:""".strip()
 
 
 class SemanticUncertaintyExtractor():
-    def __init__(self, config):
-        self.dataset = config["dataset"]
-        self.model_name = config["model_name"]
+    def __init__(self, confidence_extraction_method_cfg, dataset_cfg, qa_model_cfg, grader_model_cfg):
+        self.confidence_extraction_method_cfg = confidence_extraction_method_cfg
+        self.dataset_cfg = dataset_cfg
+        self.qa_model_cfg = qa_model_cfg
+        self.grader_model_cfg = grader_model_cfg
 
     def __call__(self, dataset: pd.DataFrame, model, sample_times: int = 10):
         df = self.generate_responses(model, dataset, sample_times)
         df = self.post_process_responses(df, sample_times)
-        return df    # return a dataframe with the following columns: question, gold_answer, reponse1, reponse2, reponse3, ..., confidence, accuracy
-
-    def prepare_prompt_sample(self):
-        return """Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nYou will receive a question. Please provide an answer in a single brief but complete sentence.\n\n### Question:\n{question}\n\n### Response:"""
-
-    def prepare_prompt_equivalence(self):
-        return """We are evaluating answers to the question {question}\nHere are two possible answers:\nPossible Answer 1: {answer1}\nPossible Answer 2: {answer2}\nDoes Possible Answer 1 semantically entail Possible Answer 2? Respond only with entailment, contradiction, or neutral.\nResponse:"""
-
-    def prepare_prompt_metric(self):
-        return """The question is: {question}.\nThe correct answer to this question is: {correct_answer}.\nThe proposed answer is: {predicted_answer}\nWithin the context of the question, does the proposed answer mean the same as any of the expected answers? Respond only with yes or no.\nResponse:"""
+        return df
 
     def generate_responses(self, model, df: pd.DataFrame, sample_times: int = 10):
-        prompt_sample = self.prepare_prompt_sample()
+        prompt_sample = SIMPLE_QA_ENATILMENY_TAMPLATE
         for i in range(sample_times):
             df[f"response{i+1}"] = None
         for idx, row in df.iterrows():
-            responses = model.generate(prompt_sample.format(question=row["question"]))
+            responses = model.generate(
+                prompt_sample.format(question=row["question"]))
             for i in range(sample_times):
                 df.at[idx, f"response{i+1}"] = responses[i]
             df[f"response{idx+1}"] = responses[idx]["content"]
-            df[f"prob{idx+1}"] = responses[idx]["logits"]
         return df
-
-    # def generate_single_response(self, texts, model_name, sample_times):
-    #     if model_name == "Qwen3/Qwen3-8B" or True:
-    #         sampling_params = SamplingParams(
-    #             temperature=0.6,
-    #             top_p=0.95,
-    #             top_k=20,
-    #             max_tokens=32768,
-    #             min_p=0.0,
-    #             n=sample_times,
-    #             logprobs=True,
-    #         )
-    #         outputs = self.llm.generate(texts, sampling_params)
-    #         results = []
-    #         for gen_out in outputs[0].outputs:
-    #             output_ids = gen_out.token_ids
-    #             logits = getattr(gen_out, "logprobs", None)
-    #             try:
-    #                 index = len(output_ids) - output_ids[::-1].index(151668)
-    #             except ValueError:
-    #                 index = 0
-    #             thinking_content = self.tokenizer.decode(
-    #                 output_ids[:index], skip_special_tokens=True
-    #             ).strip("\n")
-    #             content = self.tokenizer.decode(
-    #                 output_ids[index:], skip_special_tokens=True
-    #             ).strip("\n")
-    #             results.append({
-    #                 "thinking_content": thinking_content,
-    #                 "split_index": index,
-    #                 "content": content,
-    #                 "gen_len": len(output_ids) - index,
-    #                 "total_len": len(output_ids),
-    #                 "logits": logits,
-    #             })
-    #         return results
 
     def post_process_responses(self, model, df: pd.DataFrame, sample_times: int = 10):
         # cluster
-        prompt_equivalence = self.prepare_prompt_equivalence()
+        prompt_equivalence = SIMPLE_QA_ENATILMENY_TAMPLATE
         df[f"entropy"] = None
         for i in range(sample_times):
             df[f"cluster{i+1}"] = None
@@ -114,11 +96,12 @@ class SemanticUncertaintyExtractor():
                     df.at[idx, f"cluster{i+1}"] = total_clusters
                     responses[now_response] = total_clusters
                     clusters[responses[response]] = [i]
+
             semantic_ids = []
             flag = True
             for i in range(sample_times):
                 semantic_ids.append(df.at[idx, f"cluster{i+1}"])
-                prompt_metric = self.prepare_prompt_metric().format(
+                prompt_metric = SIMPLE_QA_MEETRIC_TAMPLATE.format(
                     question=df.at[idx, "question"],
                     correct_answer=df.at[idx, "gold_answer"],
                     predicted_answer=df.at[idx, f"response{i+1}"]
