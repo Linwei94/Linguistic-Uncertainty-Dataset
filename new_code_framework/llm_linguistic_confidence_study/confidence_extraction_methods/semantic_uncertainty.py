@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sympy.logic.boolalg import false
 import tqdm
 
 SIMPLE_QA_SAMPLE_TAMPLATE = """
@@ -31,11 +30,11 @@ Response:""".strip()
 
 
 class SemanticUncertaintyExtractor():
-    def __init__(self, confidence_extraction_method_cfg, dataset_cfg, qa_model_cfg, grader_model_cfg):
+    def __init__(self, confidence_extraction_method_cfg, dataset_cfg, model_cfg):
         self.confidence_extraction_method_cfg = confidence_extraction_method_cfg
         self.dataset_cfg = dataset_cfg
-        self.qa_model_cfg = qa_model_cfg
-        self.grader_model_cfg = grader_model_cfg
+        self.model_cfg = model_cfg
+        self.confidence_estimator = self.get_confidence_estimator(confidence_extraction_method_cfg.name)
 
     def __call__(self, dataset: pd.DataFrame, model, sample_times: int = 10):
         df = self.generate_responses(model, dataset, sample_times)
