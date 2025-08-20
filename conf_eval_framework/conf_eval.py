@@ -9,7 +9,8 @@ from .eval_p_true import PTrueConfidence
 from .eval_semantic_entropy import SemanticEntropyConfidence
 
 def main():
-    # Define argument parser for command line arguments
+    # Evaluation configuration from command line arguments
+    # --------------------------------------------------------------------------
     parser = argparse.ArgumentParser(description="Simple QA Evaluation")
     parser.add_argument("--dataset", type=str, required=True, help="Specify simplqa or mmlu_pro")
     parser.add_argument("--mode", type=str, required=False, default="eval", help="Specify the mode: eval or view")
@@ -35,21 +36,23 @@ def main():
         qa_data = pd.concat([pd.read_parquet("hf://datasets/TIGER-Lab/MMLU-Pro/" + splits["test"]), pd.read_parquet("hf://datasets/TIGER-Lab/MMLU-Pro/" + splits["validation"])])
 
     if sample_size is None or sample_size > len(qa_data):
-        print("Evaluating full dataset.")
+        print(f"Evaluating {dataset} full dataset.")
     else:
         qa_data = qa_data.sample(sample_size, random_state=42)
-        print("Evaluating a subset: ", sample_size)
+        print(f"Evaluating a subset of {dataset}: ", sample_size)
     
     if confidence not in CONFIDENCE_METHODS:
         raise ValueError(f"Invalid confidence method: {confidence}. Choose from {CONFIDENCE_METHODS}")
+    # --------------------------------------------------------------------------
     
-    # Eval confidence 
+    # Logic for running evaluation or viewing results
+    # --------------------------------------------------------------------------
     if args.mode == "eval":
         eval_map: dict[str, EvalBase] = {
             "verbal": VerbalisedConfidence(dataset=dataset, qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
-            "linguistic": LinguisticConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
-            "p_true": PTrueConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
-            "semantic_entropy": SemanticEntropyConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
+            # "linguistic": LinguisticConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
+            # "p_true": PTrueConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
+            # "semantic_entropy": SemanticEntropyConfidence(qa_data=qa_data, target_model_id=target_model, grader_model_id=grader_model),
         }
         eval_obj = eval_map[confidence]
         eval_results: pd.DataFrame = eval_obj.results
@@ -57,12 +60,12 @@ def main():
         eval_results.to_pickle(f"./{dataset}_results/{eval_obj.model}_{eval_obj.grader.name}_{confidence}_{ling_judge}_{sample_size}_results.csv")
 
     # View results of a model 
-    elif args.mode == "results":
-        print("results mode is not implemented yet.")
+    elif args.mode == "report":
+        print("report mode is not implemented yet.")
 
     # View all results from the directory
-    elif args.mode == "all_results":
-        print("all_results mode is not implemented yet.")
+    elif args.mode == "report_all":
+        print("report_all mode is not implemented yet.")
 
 if __name__ == "__main__":
     main()
