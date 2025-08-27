@@ -136,26 +136,6 @@ class SimpleQADataset():
         return results_list
 
 
-class SimpleQAFinetuneDataset():
-    def __init__(self, dataset_cfg: DictConfig) -> None:
-        self.name = dataset_cfg.name
-        self.dataset_cfg = dataset_cfg
-        self.df = pd.read_csv(dataset_cfg.file_path)
-        self.grader_model = LLM(dataset_cfg.grader_model)
-
-    def get_dataset(self):
-        return self.df
-
-    def __call__(self, *args: Any, **kwds: Any) -> Any: 
-        df = pd.read_csv("build/output/FT_input.csv", usecols=["answer", "target_answer"])
-        dataset = Dataset.from_pandas(df)
-        split_dataset = dataset.train_test_split(test_size=0.3, seed=42)
-        split_dataset = split_dataset.map(
-            self._tokenize(),
-            batched=False,
-            remove_columns=split_dataset["train"].column_names,
-        )
-
 
 class MMLUProDataset():
     def __init__(self, dataset_cfg: DictConfig):

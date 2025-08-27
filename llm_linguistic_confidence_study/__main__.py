@@ -3,10 +3,8 @@ from .datasets import load_dataset
 from .metrics import MetricEvaluator
 from omegaconf import OmegaConf, DictConfig
 import hydra
-from datetime import datetime
 import logging
 import os
-import shutil
 from hydra.core.hydra_config import HydraConfig
 import pandas as pd
 
@@ -24,7 +22,7 @@ def main(cfg: DictConfig):
 
     # evaluate the responses
     results = pd.DataFrame()
-    for name, metric_cfg in cfg.metrics.items():
+    for _, metric_cfg in cfg.metrics.items():
         metric_evaluator = MetricEvaluator(metric_cfg, dataset)
         score = metric_evaluator.evaluate(responses_df)
         logging.info(f"{metric_cfg}: {score}")
@@ -36,6 +34,6 @@ def main(cfg: DictConfig):
     results.to_csv(os.path.join(save_dir, "results.csv"), index=False)
     OmegaConf.save(cfg, os.path.join(save_dir, "config.yaml"))
     logging.info(f"Outputs saved to {save_dir}")
-
+    
 if __name__ == "__main__":
     main()

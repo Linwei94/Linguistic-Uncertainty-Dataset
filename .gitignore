@@ -13,4 +13,5 @@ outputs/
 results/
 .vscode/
 .DS_Store
+*.jsonl
 improve_llm_linguistic_confidence/train

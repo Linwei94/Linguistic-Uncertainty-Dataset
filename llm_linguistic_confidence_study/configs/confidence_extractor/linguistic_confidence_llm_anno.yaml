@@ -1,4 +1,4 @@
 defaults:
-  - linguistic_confidence_base
-state_dict_path: /home/linwei/Linguistic-Uncertainty-Dataset/new_code_framework/benchmark_mappers/mapper_weights/llm_anno_trained_reg_head.pth
+  - linguistic_confidence
+state_dict_path: llm_linguistic_confidence_study/pretrained_weights/llm_anno_trained_reg_head.pth
 type: llm_anno_dataset_trained
