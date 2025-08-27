@@ -3,7 +3,7 @@ defaults:
  - confidence_extractor: linguistic_confidence
  - dataset: mini_simple_qa
  - metrics: all
- - pre_runned_batch: no_run
+ - pre_runned_batch: vanilla-gpt-5-nano
 
 
 hydra:

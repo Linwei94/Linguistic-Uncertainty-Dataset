@@ -14,11 +14,13 @@ def main(cfg: DictConfig):
     
     # load the dataset
     dataset = load_dataset(cfg.dataset)
-    
+    # save the results, responses and config
+    save_dir = HydraConfig.get().runtime.output_dir 
 
     confidence_extractor = ConfidenceExtractor(cfg.confidence_extractor, cfg.qa_model)
     # return a dataframe with the following columns: question, gold_answer, reponse1, reponse2, reponse3, ..., confidence, accuracy
     responses_df = confidence_extractor(dataset, cfg.pre_runned_batch.qa_batch_id, cfg.pre_runned_batch.grader_batch_id)
+    responses_df.to_csv(os.path.join(save_dir, "responses.csv"), index=False)
 
     # evaluate the responses
     results = pd.DataFrame()
@@ -27,9 +29,7 @@ def main(cfg: DictConfig):
         score = metric_evaluator.evaluate(responses_df)
         logging.info(f"{metric_cfg}: {score}")
         results = pd.concat([results, pd.DataFrame({"metric": [OmegaConf.to_yaml(metric_cfg, resolve=True).replace("\n", "; ")], "score": [score]})])
-        
-    # save the results, responses and config
-    save_dir = HydraConfig.get().runtime.output_dir 
+    
     responses_df.to_csv(os.path.join(save_dir, "responses.csv"), index=False)
     results.to_csv(os.path.join(save_dir, "results.csv"), index=False)
     OmegaConf.save(cfg, os.path.join(save_dir, "config.yaml"))
