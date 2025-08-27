@@ -14,7 +14,9 @@ results/
 .vscode/
 .DS_Store
 *.jsonl
+
+
+# branch fintune specify, delet them at end of the project
 improve_llm_linguistic_confidence/train
 temp.py
-improve_llm_linguistic_confidence/res/model/
-res
+res/
