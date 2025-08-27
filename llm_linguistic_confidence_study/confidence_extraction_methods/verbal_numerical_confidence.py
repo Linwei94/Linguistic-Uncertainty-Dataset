@@ -60,7 +60,7 @@ class VerbalNumericalConfidenceExtractor():
                         return match.group(1)
                 return None
             
-            qa_responses = self.generate_qa_responses(dataset.df, self.confidence_extraction_method_cfg, task_name=f"simple_qa_{self.qa_model_cfg.model_name}_vnc_qa", qa_batch_job_id=qa_batch_job_id)
+            qa_responses = self.generate_qa_responses(dataset.df, self.confidence_extraction_method_cfg, task_name=f"simple_qa_{self.qa_model_cfg.name}_vnc_qa", qa_batch_job_id=qa_batch_job_id)
             # combine qa_responses and dataset_df
             response_df = dataset.df.copy()
 
@@ -68,8 +68,8 @@ class VerbalNumericalConfidenceExtractor():
             response_df["responses"] = [extract_answer(r) for r in qa_responses] # clean answers
             response_df["confidences"] = [extract_confidence_score(r) for r in qa_responses] # extracted confidence
             # grade the accuracy of the confidence scores
-            accuracies = dataset.grade_responses(response_df["responses"], grader_batch_job_id=grader_batch_job_id, task_name=f"simple_qa_{self.qa_model_cfg.model_name}_vnc_grader")
-            response_df["accuracies"] = accuracies 
+            accuracies = dataset.grade_responses(response_df["responses"], grader_batch_job_id=grader_batch_job_id, task_name=f"simple_qa_{self.qa_model_cfg.name}_vnc_grader")
+            response_df["accuracies"] = accuracies
 
         elif dataset.name == "mmlu_pro":
             raise NotImplementedError("MMLU Pro has not yet been implemented. ")

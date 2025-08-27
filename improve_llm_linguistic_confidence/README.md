@@ -15,7 +15,7 @@ Make sure you have the weight of lora: `improve_llm_linguistic_confidence/res/we
 - training_args.bin
 - vocab.json
 
-Make sure you have these two config files `improve_llm_linguistic_confidence/lora_test.yaml` and `llm_linguistic_confidence_study/configs/qa_model/huggingface.yaml`
+Make sure you have these two config files `improve_llm_linguistic_confidence/lora_test.yaml` and `llm_linguistic_confidence_study/configs/qa_model/Huggingfacemodel.yaml`
 
 For the items in the `improve_llm_linguistic_confidence/lora_test.yaml`:
 |name|example value|What is it used for|
@@ -26,7 +26,7 @@ For the items in the `improve_llm_linguistic_confidence/lora_test.yaml`:
 |mapper_name|self-trained|For confidence|
 |qa_template|none|To idenify the prompt|
 
-For the items in the `llm_linguistic_confidence_study/configs/qa_model/huggingface.yaml`:
+For the items in the `llm_linguistic_confidence_study/configs/qa_model/Huggingfacemodel.yaml`:
 |name|example value|What is it used for|
 |--|--|--|
 |name|Qwen/Qwen3-8B-uncertainty|To idenify the huggingface model from Qwen3 api.|

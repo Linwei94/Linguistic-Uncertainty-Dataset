@@ -6,7 +6,7 @@ import torch
 from vllm import LLM, SamplingParams
 
 
-class Huggingface:
+class Huggingfacemodel:
     def __init__(self, model_cfg: DictConfig):
         self.model_cfg = model_cfg
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -21,18 +21,15 @@ class Huggingface:
     ) -> list[str]:
         responses = []
         batch = self.model_cfg.batch
-        print(1)
-        for i in range(0, len(prompts), batch):
-            batch_prompts = prompts[i : i + batch]
-            inputs = self.tokenizer.apply_chat_template(
-                batch_prompts,
-                # return_tensors="pt",
-                # padding=True,
-                # truncation=True,
+        messages = [{"role": "user", "content": prompt} for prompt in prompts]
+        for i in range(0, len(messages), batch):
+            input = messages[i : i + batch]
+            inputs = [self.tokenizer.apply_chat_template(
+                [msg],
                 tokenize=self.model_cfg.tokenize,
                 add_generation_prompt=self.model_cfg.add_generation_prompt,
                 enable_thinking=self.model_cfg.thinking,
-            )
+            )[0] for msg in input]
             outputs = self.model.generate(
                 inputs,
                 self.sampling_params,
@@ -77,8 +74,8 @@ class Huggingface:
             # self.model = LLM(
             #     model=self.model_cfg.name,
             #     tokenizer=self.model_cfg.name,
-            #     dtype=self.model_cfg.dtype,
             #     trust_remote_code=self.model_cfg.trust_remote_code,
+            #     dtype=self.model_cfg.dtype,
             #     tensor_parallel_size=self.model_cfg.tensor_parallel_size,
             #     gpu_memory_utilization=self.model_cfg.gpu_memory_utilization,
             #     max_model_len=self.model_cfg.max_tokens,
@@ -90,8 +87,8 @@ class Huggingface:
                 trust_remote_code=True,
                 dtype="auto",
                 tensor_parallel_size=1,
-                gpu_memory_utilization=1,
-                max_model_len=1024,
+                gpu_memory_utilization=0.9,
+                max_model_len=10240,
                 disable_log_stats=True,
             )
 
@@ -108,12 +105,12 @@ class Huggingface:
             top_p=cfg.top_p,
             top_k=cfg.top_k,
             min_p=cfg.min_p,
-            max_new_tokens=cfg.max_tokens,
+            max_tokens=cfg.max_tokens,
         )
 
 
 if __name__ == "__main__":
-    aaa = Huggingface(r"llm_linguistic_confidence_study/configs/qa_model/qwen3-8b.yaml")
+    aaa = Huggingfacemodel(r"llm_linguistic_confidence_study/configs/qa_model/qwen3-8b.yaml")
     aaa(
         [
             "What is the capital of Australia?",

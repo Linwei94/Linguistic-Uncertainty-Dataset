@@ -77,7 +77,7 @@ class LinguisticConfidenceExtractor():
         
     def __call__(self, dataset, qa_batch_job_id: str = None, grader_batch_job_id: str = None):
         if dataset.name == "simple_qa" or dataset.name == "mini_simple_qa":
-            qa_responses = self.generate_qa_responses(dataset.df, self.confidence_extraction_method_cfg, task_name=f"simple_qa_{self.qa_model_cfg.model_name}_lc_qa", qa_batch_job_id=qa_batch_job_id)
+            qa_responses = self.generate_qa_responses(dataset.df, self.confidence_extraction_method_cfg, task_name=f"simple_qa_{self.qa_model_cfg.name}_lc_qa", qa_batch_job_id=qa_batch_job_id)
             # combine qa_responses and dataset_df
             response_df = dataset.df.copy()
             response_df["responses"] = qa_responses
@@ -85,7 +85,7 @@ class LinguisticConfidenceExtractor():
             confidences = self.confidence_mapper(response_df)
             response_df["confidences"] = confidences
             # grade the accuracy of the confidence scores
-            accuracies = dataset.grade_responses(response_df["responses"], grader_batch_job_id=grader_batch_job_id, task_name=f"simple_qa_{self.qa_model_cfg.model_name}_lc_grader")
+            accuracies = dataset.grade_responses(response_df["responses"], grader_batch_job_id=grader_batch_job_id, task_name=f"simple_qa_{self.qa_model_cfg.name}_lc_grader")
             response_df["accuracies"] = accuracies
         elif dataset.name == "mmlu_pro":
             pass

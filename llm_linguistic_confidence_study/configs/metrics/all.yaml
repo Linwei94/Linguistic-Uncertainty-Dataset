@@ -4,7 +4,6 @@ acc2:
   format: simpleqa_like
   exclude_not_attempted: false
 
-
 acc:
   _target_: metrics.Accuracy
   name: acc
