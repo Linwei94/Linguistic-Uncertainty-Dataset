@@ -90,7 +90,7 @@ class Huggingface:
                 trust_remote_code=True,
                 dtype="auto",
                 tensor_parallel_size=1,
-                gpu_memory_utilization=0.9,
+                gpu_memory_utilization=1,
                 max_model_len=1024,
                 disable_log_stats=True,
             )
