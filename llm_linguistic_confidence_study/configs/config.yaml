@@ -1,5 +1,5 @@
 defaults:
- - qa_model: qwen3-8b
+ - qa_model: qwen3-8b-uncertainty
  - confidence_extractor: linguistic_confidence
  - dataset: simple_qa
  - metrics: all

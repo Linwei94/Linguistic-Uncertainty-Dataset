@@ -6,10 +6,10 @@ temperature: 0.6
 top_p: 0.95
 top_k: 20
 min_p: 0.0
-thinking: false
+enable_thinking: false
 max_tokens: 1024
 # batch_size: 4
-tokenize: false
+tokenize_output: false
 add_generation_prompt: true
 tensor_parallel_size: 1
 gpu_memory_utilization: 0.6
