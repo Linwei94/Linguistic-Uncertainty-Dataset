@@ -4,6 +4,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
 from vllm import LLM, SamplingParams
+import csv
+from hydra.core.hydra_config import HydraConfig
 
 
 class Huggingfacemodel:
@@ -19,28 +21,49 @@ class Huggingfacemodel:
         task_name: str = None,
         batch_job_id: ListConfig | str = None,
     ) -> list[str]:
-        responses = []
-        messages = [{"role": "user", "content": prompt} for prompt in prompts]
-        inputs = [self.tokenizer.apply_chat_template(
-            [msg],
-            tokenize=self.model_cfg.tokenize_output,
-            add_generation_prompt=self.model_cfg.add_generation_prompt,
-            enable_thinking=self.model_cfg.enable_thinking,
-        ) for msg in messages]
-        outputs = self.model.generate(
-            inputs,
-            self.sampling_params,
-        )
-        for output in outputs:
-            output_ids = output.outputs[0].token_ids
-            if 151668 in output_ids:
-                index = len(output_ids) - output_ids[::-1].index(151668)
-            else:
-                index = 0
-            text = self.tokenizer.decode(
-                output_ids[index:], skip_special_tokens=True
-            ).strip("\n")
-            responses.append(text)
+        # If do not want to store response, delete  line below
+        if not os.path.exists(batch_job_id) or batch_job_id == None:
+        # If do not want to store response, delete  line above
+            responses = []
+            messages = [{"role": "user", "content": prompt} for prompt in prompts]
+            inputs = [self.tokenizer.apply_chat_template(
+                [msg],
+                tokenize=self.model_cfg.tokenize_output,
+                add_generation_prompt=self.model_cfg.add_generation_prompt,
+                enable_thinking=self.model_cfg.enable_thinking,
+            ) for msg in messages]
+            outputs = self.model.generate(
+                inputs,
+                self.sampling_params,
+            )
+            for output in outputs:
+                output_ids = output.outputs[0].token_ids
+                if 151668 in output_ids:
+                    index = len(output_ids) - output_ids[::-1].index(151668)
+                else:
+                    index = 0
+                text = self.tokenizer.decode(
+                    output_ids[index:], skip_special_tokens=True
+                ).strip("\n")
+                responses.append(text)
+
+
+        # If do not want to store response, delete  lines below
+            prerunned_batches_path = HydraConfig.get().runtime.output_dir.replace("results", "prerunned_batches")
+            os.makedirs(prerunned_batches_path, exist_ok=True)
+            csv_path = os.path.join(prerunned_batches_path, "responses.csv")
+            with open(csv_path, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                for resp in responses:
+                    writer.writerow([resp])
+        else:
+            responses = []  
+            with open(batch_job_id, "r", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if row:
+                        responses.append(row[0])
+        # If do not want to store response, delete  lines above
         return responses
 
     def load_model(self):
