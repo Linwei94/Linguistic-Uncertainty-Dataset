@@ -20,14 +20,12 @@ class Huggingfacemodel:
         batch_job_id: ListConfig | str = None,
     ) -> list[str]:
         responses = []
-        # batch_size = self.model_cfg.batch_size
         messages = [{"role": "user", "content": prompt} for prompt in prompts]
-        # for i in range(0, len(messages), batch_size):
         inputs = [self.tokenizer.apply_chat_template(
             [msg],
-            tokenize=self.model_cfg.tokenize,
+            tokenize=self.model_cfg.tokenize_output,
             add_generation_prompt=self.model_cfg.add_generation_prompt,
-            enable_thinking=self.model_cfg.thinking,
+            enable_thinking=self.model_cfg.enable_thinking,
         ) for msg in messages]
         outputs = self.model.generate(
             inputs,
@@ -43,60 +41,47 @@ class Huggingfacemodel:
                 output_ids[index:], skip_special_tokens=True
             ).strip("\n")
             responses.append(text)
-        # responses.extend(
-        #     self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        # )
-        print("successfully generate response.")
         return responses
 
     def load_model(self):
         if self.model_cfg.name == "Qwen3-8B-uncertainty":
             if not os.path.exists(self.model_cfg.save_path):
-                tokenizer = AutoTokenizer.from_pretrained(self.model_cfg.base_model_id)
                 model = AutoModelForCausalLM.from_pretrained(
                     self.model_cfg.base_model_id,
                     device_map=self.device,
+                    # device_map="cpu",
                 )
                 model = PeftModel.from_pretrained(
                     model, self.model_cfg.lora_weight_path
                 )
                 model = model.merge_and_unload()
                 model.save_pretrained(self.model_cfg.save_path)
-                tokenizer.save_pretrained(self.model_cfg.save_path)
-            model = LLM(
+            self.model = LLM(
                 model=self.model_cfg.save_path,
+                tokenizer=self.model_cfg.base_model_id,
+                trust_remote_code=self.model_cfg.trust_remote_code,
+                dtype=self.model_cfg.dtype,
                 tensor_parallel_size=self.model_cfg.tensor_parallel_size,
                 gpu_memory_utilization=self.model_cfg.gpu_memory_utilization,
                 max_model_len=self.model_cfg.max_tokens,
+                disable_log_stats=self.model_cfg.disable_log_stats,
             )
         elif self.model_cfg.name == "Qwen3-8B":
-            # self.model = LLM(
-            #     model=self.model_cfg.name,
-            #     tokenizer=self.model_cfg.name,
-            #     trust_remote_code=self.model_cfg.trust_remote_code,
-            #     dtype=self.model_cfg.dtype,
-            #     tensor_parallel_size=self.model_cfg.tensor_parallel_size,
-            #     gpu_memory_utilization=self.model_cfg.gpu_memory_utilization,
-            #     max_model_len=self.model_cfg.max_tokens,
-            #     disable_log_stats=self.model_cfg.disable_log_stats,
-            # )
             self.model = LLM(
-                model="Qwen/Qwen3-8B",
-                tokenizer="Qwen/Qwen3-8B",
-                trust_remote_code=True,
-                dtype="auto",
-                tensor_parallel_size=1,
-                gpu_memory_utilization=0.9,
-                max_model_len=1024,
-                disable_log_stats=True,
+                model=self.model_cfg.name,
+                tokenizer=self.model_cfg.name,
+                trust_remote_code=self.model_cfg.trust_remote_code,
+                dtype=self.model_cfg.dtype,
+                tensor_parallel_size=self.model_cfg.tensor_parallel_size,
+                gpu_memory_utilization=self.model_cfg.gpu_memory_utilization,
+                max_model_len=self.model_cfg.max_tokens,
+                disable_log_stats=self.model_cfg.disable_log_stats,
             )
 
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                self.model_cfg.base_model_id,
-                trust_remote_code=True,
-            )
-
-        # return model, tokenizer
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_cfg.base_model_id,
+            trust_remote_code=self.model_cfg.trust_remote_code,
+        )
 
     def get_generate_config(self, cfg):
         return SamplingParams(
