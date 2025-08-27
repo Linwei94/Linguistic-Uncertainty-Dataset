@@ -64,8 +64,8 @@ X_AI_MODEL_LIST = [
 ]
 
 HUGGING_FACE_LIST = [
-    "Qwen/Qwen3-8B-uncertainty",
-    "Qwen/Qwen3-8B",
+    "Qwen3-8B-uncertainty",
+    "Qwen3-8B",
 ]
 
 class LLM:

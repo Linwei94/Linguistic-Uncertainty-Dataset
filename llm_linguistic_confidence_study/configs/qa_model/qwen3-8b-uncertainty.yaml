@@ -1,4 +1,4 @@
-name: Qwen/Qwen3-8B-uncertainty
+name: Qwen3-8B-uncertainty
 base_model_id: Qwen/Qwen3-8B
 lora_weight_path: improve_llm_linguistic_confidence/res/weight/qwen3_8b_lora_weight
 save_path: improve_llm_linguistic_confidence/res/model
@@ -6,9 +6,9 @@ temperature: 0.6
 top_p: 0.95
 top_k: 20
 min_p: 0.0
-thinking: true
-max_tokens: 32768
-batch: 4
+thinking: false
+max_tokens: 1024
+# batch_size: 4
 tokenize: false
 add_generation_prompt: true
 tensor_parallel_size: 1

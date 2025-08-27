@@ -1,5 +1,5 @@
 defaults:
   - qwen3-8b-uncertainty
 
-name: Qwen/Qwen3-8B
+name: Qwen3-8B
 model_name: qwen3-8b

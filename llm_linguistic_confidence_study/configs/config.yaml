@@ -1,7 +1,7 @@
 defaults:
  - qa_model: qwen3-8b
  - confidence_extractor: linguistic_confidence
- - dataset: mini_simple_qa
+ - dataset: simple_qa
  - metrics: all
  - pre_runned_batch: no_run
 

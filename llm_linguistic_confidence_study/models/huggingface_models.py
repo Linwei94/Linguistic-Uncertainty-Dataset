@@ -20,38 +20,37 @@ class Huggingfacemodel:
         batch_job_id: ListConfig | str = None,
     ) -> list[str]:
         responses = []
-        batch = self.model_cfg.batch
+        # batch_size = self.model_cfg.batch_size
         messages = [{"role": "user", "content": prompt} for prompt in prompts]
-        for i in range(0, len(messages), batch):
-            input = messages[i : i + batch]
-            inputs = [self.tokenizer.apply_chat_template(
-                [msg],
-                tokenize=self.model_cfg.tokenize,
-                add_generation_prompt=self.model_cfg.add_generation_prompt,
-                enable_thinking=self.model_cfg.thinking,
-            ) for msg in input]
-            outputs = self.model.generate(
-                inputs,
-                self.sampling_params,
-            )
-            for output in outputs:
-                output_ids = output.outputs[0].token_ids
-                if 151668 in output_ids:
-                    index = len(output_ids) - output_ids[::-1].index(151668)
-                else:
-                    index = 0
-                text = self.tokenizer.decode(
-                    output_ids[index:], skip_special_tokens=True
-                ).strip("\n")
-                responses.append(text)
-            # responses.extend(
-            #     self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
-            # )
+        # for i in range(0, len(messages), batch_size):
+        inputs = [self.tokenizer.apply_chat_template(
+            [msg],
+            tokenize=self.model_cfg.tokenize,
+            add_generation_prompt=self.model_cfg.add_generation_prompt,
+            enable_thinking=self.model_cfg.thinking,
+        ) for msg in messages]
+        outputs = self.model.generate(
+            inputs,
+            self.sampling_params,
+        )
+        for output in outputs:
+            output_ids = output.outputs[0].token_ids
+            if 151668 in output_ids:
+                index = len(output_ids) - output_ids[::-1].index(151668)
+            else:
+                index = 0
+            text = self.tokenizer.decode(
+                output_ids[index:], skip_special_tokens=True
+            ).strip("\n")
+            responses.append(text)
+        # responses.extend(
+        #     self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        # )
         print("successfully generate response.")
         return responses
 
     def load_model(self):
-        if self.model_cfg.name == "Qwen/Qwen3-8B-uncertainty":
+        if self.model_cfg.name == "Qwen3-8B-uncertainty":
             if not os.path.exists(self.model_cfg.save_path):
                 tokenizer = AutoTokenizer.from_pretrained(self.model_cfg.base_model_id)
                 model = AutoModelForCausalLM.from_pretrained(
@@ -70,7 +69,7 @@ class Huggingfacemodel:
                 gpu_memory_utilization=self.model_cfg.gpu_memory_utilization,
                 max_model_len=self.model_cfg.max_tokens,
             )
-        elif self.model_cfg.name == "Qwen/Qwen3-8B":
+        elif self.model_cfg.name == "Qwen3-8B":
             # self.model = LLM(
             #     model=self.model_cfg.name,
             #     tokenizer=self.model_cfg.name,
