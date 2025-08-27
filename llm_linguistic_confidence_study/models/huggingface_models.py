@@ -29,7 +29,7 @@ class Huggingfacemodel:
                 tokenize=self.model_cfg.tokenize,
                 add_generation_prompt=self.model_cfg.add_generation_prompt,
                 enable_thinking=self.model_cfg.thinking,
-            )[0] for msg in input]
+            ) for msg in input]
             outputs = self.model.generate(
                 inputs,
                 self.sampling_params,
@@ -88,7 +88,7 @@ class Huggingfacemodel:
                 dtype="auto",
                 tensor_parallel_size=1,
                 gpu_memory_utilization=0.9,
-                max_model_len=10240,
+                max_model_len=1024,
                 disable_log_stats=True,
             )
 
