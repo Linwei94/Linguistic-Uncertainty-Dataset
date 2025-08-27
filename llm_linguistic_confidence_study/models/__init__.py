@@ -8,6 +8,7 @@ from .huggingface_models import Huggingface
 OPEN_AI_MODEL_LIST = [
     "gpt-5", 
     "gpt-5-mini",
+    "gpt-5-nano",
 ]
 
 # this is a list of models that support batch inference
@@ -63,13 +64,14 @@ X_AI_MODEL_LIST = [
 ]
 
 HUGGING_FACE_LIST = [
-    "Qwen/Qwen3-8B-uncertainty"
+    "Qwen/Qwen3-8B-uncertainty",
+    "Qwen/Qwen3-8B",
 ]
 
 class LLM:
     def __init__(self, model_cfg: DictConfig):
         self.model_cfg = model_cfg
-        self.model: GPT | TogetherAI | Grok | Claude = self.prepare_model(model_cfg)
+        self.model: GPT | TogetherAI | Grok | Claude | Huggingface = self.prepare_model(model_cfg)
 
 
     def __call__(self, prompts: list[str], task_name: str, batch_job_id: list[str] | str = None) -> list[str]:

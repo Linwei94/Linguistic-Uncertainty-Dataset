@@ -1,0 +1,6 @@
+defaults:
+  - qwen3-8b-uncertainty
+
+name: Qwen/Qwen3-8B
+dtype: auto
+trust_remote_code: true
