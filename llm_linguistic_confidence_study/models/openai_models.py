@@ -114,9 +114,14 @@ class GPT():
         result_text  = result_bytes.decode('utf-8')
 
         results = []
+        next_answer_index = 0
         for line in result_text.strip().split("\n"):
             entry = json.loads(line)
+            answer_index_curr = int(entry['custom_id'].split('_')[-1]) # index of the question
             answer = entry["response"]["body"]["choices"][0]["message"]["content"].strip()
+            while answer_index_curr != next_answer_index:
+                results.append(None)
+                next_answer_index += 1
             results.append(answer)
-            
+            next_answer_index += 1
         return results

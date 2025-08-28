@@ -122,14 +122,15 @@ class SimpleQADataset():
                 question=self.df.iloc[idx]["problem"], target=self.df.iloc[idx]["answer"], predicted_answer=response))
         grader_results = self.grader_model(
             prompts, task_name=task_name, batch_job_id=grader_batch_job_id)
-        if any(grader_result not in ["A", "B", "C"] for grader_result in grader_results):
+        if any(grader_result not in ["A", "B", "C", None] for grader_result in grader_results):
             logging.warning("Some grade results are invalid, not in [A, B, C]")
             exit(1)
 
         result_map = {
             "A": "CORRECT",
             "B": "INCORRECT",
-            "C": "NOT_ATTEMPTED"
+            "C": "NOT_ATTEMPTED",
+            None: "NOT_ATTEMPTED"
         }
         results_list = [result_map[grader_result]
                         for grader_result in grader_results]
