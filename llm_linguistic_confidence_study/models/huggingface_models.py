@@ -90,7 +90,7 @@ class Huggingfacemodel:
                     max_model_len=self.model_cfg.max_tokens,
                     disable_log_stats=self.model_cfg.disable_log_stats,
                 )
-            elif self.model_cfg.name == "Qwen3-8B":
+            elif self.model_cfg.name == "Qwen3-8B" or self.model_cfg.name == "Qwen3-32B":
                 self.model = LLM(
                     model=self.model_cfg.model_name,
                     tokenizer=self.model_cfg.model_name,
