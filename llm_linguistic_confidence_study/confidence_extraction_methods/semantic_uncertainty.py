@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sympy.logic.boolalg import false
 import tqdm
-from ..datasets import MMLUProDataset, SimpleQADataset
+from ..datasets import MMLUProDataset, SimpleQADataset, SimpleQAFinetuneDataset
 from ..models import LLM
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
@@ -31,13 +31,20 @@ class SemanticUncertaintyExtractor():
     def __init__(self, confidence_extraction_method_cfg, qa_model_cfg):
         self.confidence_extraction_method_cfg = confidence_extraction_method_cfg
         self.qa_model_cfg = qa_model_cfg
-        self.qa_model = self.get_qa_model(self.qa_model_cfg)
-        self.entailment_model = EntailmentDeberta()
+        if self.confidence_extraction_method_cfg.task == 'vanilla':
+            self.qa_model = self.get_qa_model(self.qa_model_cfg)
+            self.entailment_model = EntailmentDeberta()
+        elif self.confidence_extraction_method_cfg.task == 'sample':
+            self.qa_model = self.get_qa_model(self.qa_model_cfg)
+        elif self.confidence_extraction_method_cfg.task == 'entailment':
+            self.entailment_model = EntailmentDeberta()
+        else:
+            raise ValueError(f"Invalid uncertainty task: {self.confidence_extraction_method_cfg.task}")
         
     def get_qa_model(self, qa_model_cfg):
         return LLM(qa_model_cfg)
     
-    def __call__(self, dataset: MMLUProDataset | SimpleQADataset, qa_batch_job_id: list[str] | str = None, grader_batch_job_id: list[str] | str = None):
+    def __call__(self, dataset: MMLUProDataset | SimpleQADataset | SimpleQAFinetuneDataset, qa_batch_job_id: list[str] | str = None, grader_batch_job_id: list[str] | str = None):
         if dataset.name == "simple_qa" or dataset.name == "mini_simple_qa":
             qa_responses = self.generate_qa_responses(dataset.df, self.confidence_extraction_method_cfg, task_name=f"simple_qa_{self.qa_model_cfg.name}_su_qa", qa_batch_job_id=qa_batch_job_id)
             # qa_responses are list of lists of strings, each inner list is the responses for the whole dataset
@@ -62,12 +69,52 @@ class SemanticUncertaintyExtractor():
             response_df["accuracies"] = accuracies
         elif dataset.name == "mmlu_pro":
             pass
+        elif dataset.name == "simple_qa_finetune":
+            if self.confidence_extraction_method_cfg.task == "sample":
+                if self.confidence_extraction_method_cfg.qa_template == "vanilla":
+                    prompt_template = SIMPLE_QA_EVAL_VANILLA_TEMPLATE
+                elif self.confidence_extraction_method_cfg.qa_template == "vanilla_uncertainty":
+                    prompt_template = SIMPLE_QA_EVAL_VANILLA_UNCERTAINTY_TEMPLATE
+                else:
+                    raise ValueError(f"Invalid qa template: {self.confidence_extraction_method_cfg.qa_template}")
+                problems = list(set(dataset.get_dataset()["problem"]))
+                qa_prompts = [prompt_template.format(question=problem) for problem in problems for _ in range(self.confidence_extraction_method_cfg.sample_times)]
+                qa_responses = self.qa_model(
+                    prompts=qa_prompts, 
+                    task_name=f"simple_qa_finetune_{self.qa_model.model_cfg.name}_qa", batch_job_id=None,
+                    )
+                response_df = pd.DataFrame({"problem": problems})
+                group_size = 10
+                total = len(qa_responses)
+                num_rows = (total + group_size - 1) // group_size  
+                for row_idx in range(num_rows):
+                    start_idx = row_idx * group_size
+                    end_idx = min(start_idx + group_size, total)
+                    group = qa_responses[start_idx:end_idx]
+                    for col_idx, resp in enumerate(group):
+                        response_df.loc[row_idx, f"response_{col_idx}"] = resp
+                response_df.to_csv(os.path.join(qa_batch_job_id, "temp.csv"),  index=False)
+            elif self.confidence_extraction_method_cfg.task == "entailment":
+                response_df = pd.read_csv(os.path.join(qa_batch_job_id, "temp.csv"))
+                if self.confidence_extraction_method_cfg.semantic_id_path_debug is None:
+                    semantic_ids_list_list = self.get_semantic_ids_for_response_df(response_df)
+                    np.save("semantic_ids_list_list.npy", semantic_ids_list_list)
+                else:
+                    semantic_ids_list_list = np.load(self.confidence_extraction_method_cfg.semantic_id_path_debug)
+                for i in range(self.confidence_extraction_method_cfg.sample_times):
+                    response_df[f"semantic_id_{i}"] = semantic_ids_list_list[i]
+                # confidence estimation
+                confidences, predictions = self.calculate_confidence_and_predictions(response_df)
+                response_df["confidences"] = confidences
+                response_df["responses"] = predictions
+            else:
+                raise ValueError(f"Invalid uncertainty task: {self.confidence_extraction_method_cfg.task}")
         else:
             raise ValueError(f"Invalid dataset name: {dataset.name}")
         # return the response_df
         return response_df
 
-    def generate_qa_responses(self, dataset_df: pd.DataFrame, confidence_extraction_method_cfg: DictConfig, task_name: str, qa_batch_job_id: ListConfig | str  = None):
+    def generate_qa_responses(self, dataset_df: pd.DataFrame, confidence_extraction_method_cfg: DictConfig, task_name: str, qa_batch_job_id: ListConfig | str  = None) -> list:
         # prepare prompts
         if confidence_extraction_method_cfg.qa_template == "vanilla":
             prompt_template = SIMPLE_QA_EVAL_VANILLA_TEMPLATE
@@ -96,7 +143,6 @@ class SemanticUncertaintyExtractor():
             # prediction is the response with the most frequent semantic id
             predictions.append(response_df.at[idx, f"response_{index_of_most_frequent_semantic_id}"])
         return confidences, predictions
-    
     
     def get_semantic_ids_for_response_df(self, response_df: pd.DataFrame, strict_entailment=False) -> list[list[int]]:
         semantic_ids_list_list = []

@@ -1,3 +1,5 @@
+# This readme is out of date. Some of content may be wrong.
+
 Make sure you have the weight of lora: `improve_llm_linguistic_confidence/res/weight/qwen3_8b_lora_weight`. It often contains these files:
 - adapter_config.json
 - adapter_model.safetensors

@@ -1,0 +1,5 @@
+name: semantic_uncertainty
+qa_template: vanilla
+semantic_id_path_debug: null
+sample_times: 10
+task: sample # ['vanilla' -> not for lora, 'sample' -> sample in lora only, 'entailment' -> entailment in lora only]

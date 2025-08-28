@@ -1,5 +1,0 @@
-name: lora_test
-model_name: distilroberta-base
-state_dict_path: llm_linguistic_confidence_study/pretrained_weights/human_anno_trained_reg_head.pth
-mapper_name: self-trained
-qa_template: none

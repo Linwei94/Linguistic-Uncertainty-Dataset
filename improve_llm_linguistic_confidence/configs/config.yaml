@@ -1,0 +1,13 @@
+defaults:
+ - qa_model: qwen3-8b
+ - confidence_extractor: semantic_uncertainty
+ - dataset: simple_qa_finetune
+ - pre_runned_batch: none # none -> sample -> uncertainty -> full_data
+ - finetune: default
+
+
+hydra:
+  run:
+    dir: improve_llm_linguistic_confidence/results/${dataset.name}/${qa_model.name}/${dataset.name}/${now:%Y-%m-%d_%H-%M-%S}
+
+seed: 42

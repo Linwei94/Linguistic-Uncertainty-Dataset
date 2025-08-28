@@ -1,0 +1,22 @@
+name: lora
+r: 32
+target_modules: [q_proj, v_proj]
+lora_alpha: 32
+lora_dropout: 0.05
+bias: none
+task_type: CAUSAL_LM
+
+output_dir: improve_llm_linguistic_confidence/res/weight
+learning_rate: 1e-4
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 32
+num_train_epochs: 3
+eval_strategy: no
+save_strategy: epoch
+load_best_model_at_end: true
+test_size: 0.0
+seed: 42
+dataset_enable_batched: true
+dataset_batch_size: 1000
+task: preprocess # ['preprocess': prepare data, 'train': train]

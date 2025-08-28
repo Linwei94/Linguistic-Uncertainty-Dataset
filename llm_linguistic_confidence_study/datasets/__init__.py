@@ -92,7 +92,7 @@ def load_dataset(dataset_cfg: DictConfig):
         return SimpleQADataset(dataset_cfg)
     elif dataset_cfg.name == "mmlu_pro":
         return MMLUProDataset(dataset_cfg)
-    if dataset_cfg.name == "simple_qa_finetune" or dataset_cfg.name == "mini_simple_qa_finetune":
+    elif dataset_cfg.name == "simple_qa_finetune":
         return SimpleQAFinetuneDataset(dataset_cfg)
     else:
         raise ValueError(f"Invalid dataset name: {dataset_cfg.name}")
@@ -136,7 +136,18 @@ class SimpleQADataset():
                         for grader_result in grader_results]
         return results_list
 
+class SimpleQAFinetuneDataset():
+    def __init__(self, dataset_cfg: DictConfig):
+        self.name = dataset_cfg.name
+        self.dataset_cfg = dataset_cfg
+        self.df = pd.read_csv(dataset_cfg.file_path_global)
+        self.df_lora = pd.read_csv(self.dataset_cfg.file_path_lora_old)
 
+    def get_dataset(self):
+        return self.df
+
+    def get_lora_temp(self):
+        return self.df_lora
 
 class MMLUProDataset():
     def __init__(self, dataset_cfg: DictConfig):

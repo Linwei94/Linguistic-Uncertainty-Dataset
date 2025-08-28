@@ -1,0 +1,4 @@
+name: simple_qa_finetune
+file_path_global: llm_linguistic_confidence_study/datasets/simple_qa_finetune_global.csv
+file_path_answer: null
+file_path_lora_old: llm_linguistic_confidence_study/datasets/simple_qa_finetune_lora_old.csv
