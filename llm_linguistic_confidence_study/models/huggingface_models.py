@@ -22,7 +22,7 @@ class Huggingfacemodel:
         batch_job_id: ListConfig | str = None,
     ) -> list[str]:
         # If do not want to store response, delete  line below
-        if not os.path.exists(batch_job_id) or batch_job_id == None:
+        if (batch_job_id == None) or (not os.path.exists(batch_job_id)):
         # If do not want to store response, delete  line above
             responses = []
             messages = [{"role": "user", "content": prompt} for prompt in prompts]

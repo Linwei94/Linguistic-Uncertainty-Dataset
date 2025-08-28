@@ -20,3 +20,5 @@ results/
 improve_llm_linguistic_confidence/train
 temp.py
 res/
+env.txt
+temp.ipynb

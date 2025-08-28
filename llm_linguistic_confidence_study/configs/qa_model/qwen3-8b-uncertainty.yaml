@@ -12,7 +12,7 @@ max_tokens: 1024
 tokenize_output: false
 add_generation_prompt: true
 tensor_parallel_size: 1
-gpu_memory_utilization: 0.6
+gpu_memory_utilization: 0.9
 disable_log_stats: true
 model_name: qwen3-8b-uncertainty
 trust_remote_code: true
